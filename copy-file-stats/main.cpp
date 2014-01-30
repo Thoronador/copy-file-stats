@@ -57,6 +57,8 @@ void showHelp()
             << "  --no-chown       - alias for --no-ownership\n"
             << "  --no-permissions - do not change file permissions\n"
             << "  --no-chmod       - alias for --no-permissions\n"
+            << "  --dry-run        - only show what would be done, but don't do it\n"
+            << "  --simulate | -s  - alias for --dry-run\n"
             << "  SOURCE_DIR       - set source directory (i.e. reference directory) to\n"
             << "                     SOURCE_DIR\n"
             << "  DESTINATION_DIR  - set destination directory to DESTINATION_DIR\n";
@@ -64,7 +66,7 @@ void showHelp()
 
 void showVersion()
 {
-  std::cout << "copy-file-status, version 0.1, 2014-01-29\n";
+  std::cout << "copy-file-status, version 0.2, 2014-01-30\n";
 }
 
 int main(int argc, char **argv)
@@ -74,6 +76,7 @@ int main(int argc, char **argv)
   bool verbose = true;
   bool adjustPermissions = true;
   bool adjustOwnership = true;
+  bool dryRun = false;
 
   if ((argc>1) and (argv!=NULL))
   {
@@ -106,7 +109,8 @@ int main(int argc, char **argv)
         }
         else if (param=="--silent")
         {
-          verbose = false;
+          if (!dryRun)
+            verbose = false;
         }
         else if ((param=="--no-ownership") or (param=="--no-chown"))
         {
@@ -125,6 +129,11 @@ int main(int argc, char **argv)
         {
           adjustPermissions = true;
           adjustOwnership = false;
+        }
+        else if ((param=="--dry-run") or (param=="--simulate") or (param=="-s"))
+        {
+          dryRun = true;
+          verbose = true;
         }
         else if (sourceDir.empty())
         {
@@ -175,7 +184,7 @@ int main(int argc, char **argv)
     return 1;
   }
 
-  if (copy_stats_recursive(sourceDir, destDir, adjustPermissions, adjustOwnership, verbose))
+  if (copy_stats_recursive(sourceDir, destDir, adjustPermissions, adjustOwnership, verbose, dryRun))
   {
     std::cout << "Success!\n";
     return 0;

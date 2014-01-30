@@ -133,7 +133,7 @@ std::string getHumanReadableOwnership(const struct stat& statbuf)
   return result;
 }
 
-bool copy_file_stats(const std::string& src_path, const std::string& dest_path, const bool permissions, const bool ownership, const bool verbose)
+bool copy_file_stats(const std::string& src_path, const std::string& dest_path, const bool permissions, const bool ownership, const bool verbose, const bool dryRun)
 {
   if (!(permissions or ownership))
   {
@@ -176,13 +176,16 @@ bool copy_file_stats(const std::string& src_path, const std::string& dest_path, 
     {
       if (verbose)
         std::cout << "Changing mode of " << dest_path << " from " << std::oct << dest_statbuf.st_mode <<  " to " << std::oct << src_statbuf.st_mode << std::dec <<"...\n";
-      ret = chmod(dest_path.c_str(), src_statbuf.st_mode);
-      if (0!=ret)
+      if (!dryRun)
       {
-        int errorCode = errno;
-        std::cout << "Error while changing mode of \"" << dest_path << "\": Code " << errorCode << " (" << strerror(errorCode) << ").\n";
-        return false;
-      }
+        ret = chmod(dest_path.c_str(), src_statbuf.st_mode);
+        if (0!=ret)
+        {
+          int errorCode = errno;
+          std::cout << "Error while changing mode of \"" << dest_path << "\": Code " << errorCode << " (" << strerror(errorCode) << ").\n";
+          return false;
+        }
+      }//if not dry run
     }
   }// if permissions
 
@@ -194,19 +197,22 @@ bool copy_file_stats(const std::string& src_path, const std::string& dest_path, 
     {
       if (verbose)
         std::cout << "Changing ownership of \"" << dest_path << "\" from " << getHumanReadableOwnership(dest_statbuf) << " to " << getHumanReadableOwnership(src_statbuf) << "...\n";
-      ret = chown(dest_path.c_str(), src_statbuf.st_uid, src_statbuf.st_gid);
-      if (0!=ret)
+      if (!dryRun)
       {
-        int errorCode = errno;
-        std::cout << "Error while changing ownership of \"" << dest_path << "\": Code " << errorCode << " (" << strerror(errorCode) << ").\n";
-        return false;
-      }
-    }
+        ret = chown(dest_path.c_str(), src_statbuf.st_uid, src_statbuf.st_gid);
+        if (0!=ret)
+        {
+          int errorCode = errno;
+          std::cout << "Error while changing ownership of \"" << dest_path << "\": Code " << errorCode << " (" << strerror(errorCode) << ").\n";
+          return false;
+        }
+      }//if not dry run
+    } //if change required
   }//if ownership
   return true;
 }
 
-bool copy_stats_recursive(const std::string& src_dir, const std::string& dest_dir, const bool permissions, const bool ownership, const bool verbose)
+bool copy_stats_recursive(const std::string& src_dir, const std::string& dest_dir, const bool permissions, const bool ownership, const bool verbose, const bool dryRun)
 {
   const std::vector<FileEntry> files = getDirectoryFileList(src_dir);
   unsigned int i;
@@ -215,14 +221,14 @@ bool copy_stats_recursive(const std::string& src_dir, const std::string& dest_di
     if ((files[i].fileName!="..") and (files[i].fileName!="."))
     {
       //handle file/dir itself
-      if (!copy_file_stats(src_dir+pathDelimiter+files[i].fileName, dest_dir+pathDelimiter+files[i].fileName, permissions, ownership, verbose))
+      if (!copy_file_stats(src_dir+pathDelimiter+files[i].fileName, dest_dir+pathDelimiter+files[i].fileName, permissions, ownership, verbose, dryRun))
       {
         return false;
       }
       //handle directory content, if it's a directory
       if (files[i].isDirectory)
       {
-        if (!copy_stats_recursive(src_dir+pathDelimiter+files[i].fileName, dest_dir+pathDelimiter+files[i].fileName, permissions, ownership, verbose))
+        if (!copy_stats_recursive(src_dir+pathDelimiter+files[i].fileName, dest_dir+pathDelimiter+files[i].fileName, permissions, ownership, verbose, dryRun))
         {
           return false;
         }
