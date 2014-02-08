@@ -57,8 +57,10 @@ void showHelp()
             << "  --no-chown       - alias for --no-ownership\n"
             << "  --no-permissions - do not change file permissions\n"
             << "  --no-chmod       - alias for --no-permissions\n"
-            << "  --dry-run        - only show what would be done, but don't do it\n"
-            << "  --simulate | -s  - alias for --dry-run\n"
+            << "  --dry-run, -n    - only show what would be done, but don't do it\n"
+            << "  --simulate, -s   - alias for --dry-run\n"
+            << "  --force, -f      - force change of file permissions and/or ownership.\n"
+            << "                     Either -f or -n have to be given to run this programme.\n"
             << "  SOURCE_DIR       - set source directory (i.e. reference directory) to\n"
             << "                     SOURCE_DIR\n"
             << "  DESTINATION_DIR  - set destination directory to DESTINATION_DIR\n";
@@ -66,7 +68,7 @@ void showHelp()
 
 void showVersion()
 {
-  std::cout << "copy-file-status, version 0.2, 2014-01-30\n";
+  std::cout << "copy-file-status, version 0.3, 2014-02-08\n";
 }
 
 int main(int argc, char **argv)
@@ -77,6 +79,7 @@ int main(int argc, char **argv)
   bool adjustPermissions = true;
   bool adjustOwnership = true;
   bool dryRun = false;
+  bool hasForceOrDryRun = false;
 
   if ((argc>1) and (argv!=NULL))
   {
@@ -130,21 +133,40 @@ int main(int argc, char **argv)
           adjustPermissions = true;
           adjustOwnership = false;
         }
-        else if ((param=="--dry-run") or (param=="--simulate") or (param=="-s"))
+        else if ((param=="--dry-run") or (param=="-n") or (param=="--simulate") or (param=="-s"))
         {
-          dryRun = true;
-          verbose = true;
+          if (!hasForceOrDryRun)
+          {
+            dryRun = true;
+            hasForceOrDryRun = true;
+          }
+          else
+          {
+            std::cout << "Error: Parameters --force and --dry-run are mutually exclusive and may only be given once per run.\n";
+            return rcInvalidParameter;
+          }
+        }
+        else if ((param=="--force") or (param=="-f"))
+        {
+          if (!hasForceOrDryRun)
+          {
+            dryRun = false;
+            hasForceOrDryRun = true;
+          }
+          else
+          {
+            std::cout << "Error: Parameters --force and --dry-run are mutually exclusive and may only be given once per run.\n";
+            return rcInvalidParameter;
+          }
         }
         else if (sourceDir.empty())
         {
           sourceDir = param;
-          //sourceDir = slashify(sourceDir);
           std::cout << "Source directory was set to \""<<sourceDir<<"\".\n";
         }//source directory
         else if (destDir.empty())
         {
           destDir = param;
-          //destDir = slashify(destDir);
           std::cout << "Destination directory was set to \""<<destDir<<"\".\n";
         }//dest. directory
         else
@@ -174,6 +196,12 @@ int main(int argc, char **argv)
   {
     std::cout << "This programme requires a source and a destination directory as parameters to run properly.\n"
               << "Use --help to get a list of valid parameters.\n";
+    return rcInvalidParameter;
+  }
+
+  if (!hasForceOrDryRun)
+  {
+    std::cout << "Error: Neither --dry-run nor --force are given, refusing to run.\n";
     return rcInvalidParameter;
   }
 

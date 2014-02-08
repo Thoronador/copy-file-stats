@@ -28,14 +28,11 @@
 #include <grp.h>
 #include <unistd.h>
 
-#if defined(_WIN32)
-  //Windows includes go here
-  #include <io.h>
-#elif defined(__linux__) || defined(linux)
+#if defined(__linux__) || defined(linux)
   //Linux directory entries
   #include <dirent.h>
 #else
-  #error "Unknown operating system!"
+  #error "Unknown operating system! Only compiles on Linux-like systems."
 #endif
 
 FileEntry::FileEntry()
@@ -46,28 +43,7 @@ std::vector<FileEntry> getDirectoryFileList(const std::string& Directory)
 {
   std::vector<FileEntry> result;
   FileEntry one;
-  #if defined(_WIN32)
-  //Windows part
-  intptr_t handle;
-  struct _finddata_t sr;
-  sr.attrib = _A_NORMAL | _A_RDONLY | _A_HIDDEN | _A_SYSTEM | _A_VOLID |
-              _A_SUBDIR | _A_ARCH;
-  handle = _findfirst(std::string(Directory+"*").c_str(),&sr);
-  if (handle == -1)
-  {
-    std::cout << "getDirectoryFileList: ERROR: unable to open directory "
-              <<"\""<<Directory<<"\". Returning empty list.\n";
-    return result;
-  }
-  //search it
-  while( _findnext(handle, &sr)==0)
-  {
-    one.fileName = std::string(sr.name);
-    one.isDirectory = ((sr.attrib & _A_SUBDIR)==_A_SUBDIR);
-    result.push_back(one);
-  }//while
-  _findclose(handle);
-  #elif defined(__linux__) || defined(linux)
+  #if defined(__linux__) || defined(linux)
   //Linux part
   DIR * direc = opendir(Directory.c_str());
   if (direc == NULL)
@@ -96,17 +72,6 @@ std::vector<FileEntry> getDirectoryFileList(const std::string& Directory)
   #endif
   return result;
 }//function
-
-std::string slashify(const std::string& path)
-{
-  if (path.empty()) return path;
-  //Does it have a trailing (back)slash?
-  if (path[path.length()-1]!=pathDelimiter)
-  {
-    return path + pathDelimiter;
-  }
-  return path;
-}
 
 std::string uintToString(const unsigned int value)
 {
@@ -150,15 +115,16 @@ bool copy_file_stats(const std::string& src_path, const std::string& dest_path, 
   }
   struct stat dest_statbuf;
   ret = lstat(dest_path.c_str(), &dest_statbuf);
-  if (ENOENT==ret)
-  {
-    //destination file does not exist, skip silently
-    return true;
-  }
   if (0!=ret)
   {
     int errorCode = errno;
-    std::cout << "Error while querying status of \"" << dest_path << "\": Code " << errorCode << " (" << strerror(errorCode) << ").\n";
+    if (errorCode==ENOENT)
+    {
+      //destination file does not exist, skip silently
+      return true;
+    }
+    std::cout << "Error while querying status of \"" << dest_path << "\": Code "
+              << errorCode << " (" << strerror(errorCode) << ").\n";
     return false;
   }
   //check for equivalence
@@ -174,15 +140,20 @@ bool copy_file_stats(const std::string& src_path, const std::string& dest_path, 
     //check for required permission change
     if (dest_statbuf.st_mode != src_statbuf.st_mode)
     {
-      if (verbose)
-        std::cout << "Changing mode of " << dest_path << " from " << std::oct << dest_statbuf.st_mode <<  " to " << std::oct << src_statbuf.st_mode << std::dec <<"...\n";
+      if (verbose or dryRun)
+      {
+        std::cout << (dryRun ? "Would change mode of " : "Changing mode of ")
+                  << dest_path << " from " << std::oct << dest_statbuf.st_mode
+                  << " to " << std::oct << src_statbuf.st_mode << std::dec <<"...\n";
+      }
       if (!dryRun)
       {
         ret = chmod(dest_path.c_str(), src_statbuf.st_mode);
         if (0!=ret)
         {
           int errorCode = errno;
-          std::cout << "Error while changing mode of \"" << dest_path << "\": Code " << errorCode << " (" << strerror(errorCode) << ").\n";
+          std::cout << "Error while changing mode of \"" << dest_path
+                    << "\": Code " << errorCode << " (" << strerror(errorCode) << ").\n";
           return false;
         }
       }//if not dry run
@@ -195,15 +166,21 @@ bool copy_file_stats(const std::string& src_path, const std::string& dest_path, 
     //change needed?
     if ((dest_statbuf.st_uid!=src_statbuf.st_uid) or (dest_statbuf.st_gid!=src_statbuf.st_gid))
     {
-      if (verbose)
-        std::cout << "Changing ownership of \"" << dest_path << "\" from " << getHumanReadableOwnership(dest_statbuf) << " to " << getHumanReadableOwnership(src_statbuf) << "...\n";
+      if (verbose or dryRun)
+      {
+          std::cout << (dryRun ? "Would change ownership of \"" : "Changing ownership of \"")
+                    << dest_path << "\" from " << getHumanReadableOwnership(dest_statbuf)
+                    << " to " << getHumanReadableOwnership(src_statbuf) << "...\n";
+      }
       if (!dryRun)
       {
         ret = chown(dest_path.c_str(), src_statbuf.st_uid, src_statbuf.st_gid);
         if (0!=ret)
         {
           int errorCode = errno;
-          std::cout << "Error while changing ownership of \"" << dest_path << "\": Code " << errorCode << " (" << strerror(errorCode) << ").\n";
+          std::cout << "Error while changing ownership of \"" << dest_path
+                    << "\": Code " << errorCode << " (" << strerror(errorCode)
+                    << ").\n";
           return false;
         }
       }//if not dry run

@@ -44,15 +44,6 @@ struct FileEntry {
 /* returns a list of all files in the given directory as a vector */
 std::vector<FileEntry> getDirectoryFileList(const std::string& Directory);
 
-/* adds a slash or backslash (or whatever is the path delimiter on the current
-   system) to the given path, if the path is not empty and has no path delimiter
-   as the last character yet.
-
-   parameters:
-       path - the path that should (possibly) have an (back)slash
-*/
-std::string slashify(const std::string& path);
-
 /* copies file permissions and/or ownership from file src_path to dest_path without copying the file itself
 
    parameters:
