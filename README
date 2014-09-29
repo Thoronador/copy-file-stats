@@ -1,0 +1,76 @@
+copy-file-stats
+===============
+
+copy-file-stats is a small program to "copy" file stats from one files in one
+directory and its subdirectories to another directory and its subdirectories.
+The program works on Linux (or similar POSIX-compatible OS) only, no Windows
+port.
+
+The "stats" mean file ownership (both user and group) and/or permissions.
+The program expects three parameters: path to the source directory and path of the
+destination directory, in that order. Third parameter should be either
+--dry-run or --force, depending on whether you just want to show, what would be
+changed or whether you want to perform those changes.
+
+After copy-file-stats is done, files in the destination directory will have the
+same owner and permissions as the corresponding files in the source directory.
+This basically requires that source and destination directory have more or less
+the same file and directory structure. Files that are present in the source
+directory but not in the destination directory will not be touched. The same
+applies to files that are present in the destination but not in the source
+directory.
+
+copy-file-stats is a command-line only program. There is no GUI, because I did
+not need a GUI.
+
+
+Command line options:
+---------------------
+
+copy-file-stats supports several command line options.
+
+
+copy-file-stats [options] SOURCE_DIR DESTINATION_DIR
+
+  --help           - displays a help message and quits
+  -?               - same as --help
+  --version        - displays the version of the programme and quits
+  -v               - same as --version
+  --silent         - produces less output about ongoing changes
+  --no-ownership   - do not change file ownership
+  --no-chown       - alias for --no-ownership
+  --no-permissions - do not change file permissions
+  --no-chmod       - alias for --no-permissions
+  --dry-run, -n    - only show what would be done, but don't do it
+  --simulate, -s   - alias for --dry-run
+  --force, -f      - force change of file permissions and/or ownership.
+                     Either -f or -n have to be given to run this programme.
+  SOURCE_DIR       - set source directory (i.e. reference directory) to
+                     SOURCE_DIR
+  DESTINATION_DIR  - set destination directory to DESTINATION_DIR
+
+
+
+Build copy-file-stats from source:
+----------------------------------
+
+The source repository of copy-file-stats contains a CMakeLists.txt file that
+is suitable for use with CMake. CMake version 2.4 or later should be sufficient
+to build the program, but it has only been tested with CMake 2.8.
+To build the program, just type the following two commands in the directory
+that contains the source code:
+
+    cmake ./
+    make
+
+If you prefer an "out of source" build, you can create a build directory and
+then do the same, e.g.:
+
+    mkdir ./build
+    cd ./build
+    cmake ../
+    make
+
+This should do the trick, as long as CMake and a C++ compiler are installed on
+your machine. Any recent (and not so recent) C++ compiler should work, because
+copy-file-stats does NOT use any language constructs from C++11 or C++14.
