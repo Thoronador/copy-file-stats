@@ -2,17 +2,26 @@ language: cpp
 compiler:
   - clang
   - gcc
-# branches:
-#  only:
-#    - master
 script:
-  - mkdir ./build
-  - cd ./build
-  - cmake ../
-  - make -j2
-  - ctest -V
+  - echo "coverity stuff should be done by now."
 notifications:
   email: false
 
 # container-based builds
 sudo: false
+
+env:
+  global:
+   # The next declaration is the encrypted COVERITY_SCAN_TOKEN, created
+   #   via the "travis encrypt" command using the project repo's public key
+   - secure: "a8YvupWrOWAUtDyfTnb8cImwrsYmvboFNrM/lCkU9lMVef0Zzay30dvc7SLQde+8/Isduu8FSHvwD+mtzIKVw0+/IESKEwbtKVBUVa6b8pPAcHcC6ME8pNRWbJc6B1HqzkAHNmhYrinMAFJcCWr6+OzjG1hH7aL44IH5juxyReI="
+
+addons:
+  coverity_scan:
+    project:
+      name: "Thoronador/copy-file-stats"
+      description: "copy-file-stats"
+    notification_email: thoronador@users.sourceforge.net
+    build_command_prepend: "cmake ./"
+    build_command:   "make"
+    branch_pattern: coverity_scan
