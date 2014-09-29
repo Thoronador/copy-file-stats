@@ -68,7 +68,7 @@ void showHelp()
 
 void showVersion()
 {
-  std::cout << "copy-file-status, version 0.3, 2014-02-08\n";
+  std::cout << "copy-file-stats, version 0.3.1, 2014-09-29\n";
 }
 
 int main(int argc, char **argv)
