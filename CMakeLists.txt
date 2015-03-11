@@ -3,7 +3,11 @@ cmake_minimum_required (VERSION 2.8)
 
 project(copy-file-stats)
 
-set(cfs_sources FileUtilities.cpp main.cpp)
+set(cfs_sources
+    AuxiliaryFunctions.cpp
+    FileUtilities.cpp
+    SaveRestore.cpp
+    main.cpp)
 
 message ( "Info: CMAKE_CXX_COMPILER is set to ${CMAKE_CXX_COMPILER}." )
 

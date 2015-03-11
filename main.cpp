@@ -19,7 +19,7 @@
 */
 
 #include <iostream>
-#include "FileUtilities.h"
+#include "FileUtilities.hpp"
 
 const int rcInvalidParameter = 1;
 

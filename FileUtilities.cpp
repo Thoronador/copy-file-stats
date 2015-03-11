@@ -18,15 +18,15 @@
  -------------------------------------------------------------------------------
 */
 
-#include "FileUtilities.h"
+#include "FileUtilities.hpp"
 #include <iostream>
 #include <cerrno>
 #include <cstring>
-#include <sstream>
 #include <sys/stat.h>
 #include <pwd.h>
 #include <grp.h>
 #include <unistd.h>
+#include "AuxiliaryFunctions.hpp"
 
 #if defined(__linux__) || defined(linux)
   //Linux directory entries
@@ -72,13 +72,6 @@ std::vector<FileEntry> getDirectoryFileList(const std::string& Directory)
   #endif
   return result;
 }//function
-
-std::string uintToString(const unsigned int value)
-{
-  std::ostringstream s_str;
-  s_str << value;
-  return s_str.str();
-}
 
 std::string getHumanReadableOwnership(const struct stat& statbuf)
 {

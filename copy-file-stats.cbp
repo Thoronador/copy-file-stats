@@ -32,8 +32,12 @@
 			<Add option="-Wall" />
 			<Add option="-fexceptions" />
 		</Compiler>
+		<Unit filename="AuxiliaryFunctions.cpp" />
+		<Unit filename="AuxiliaryFunctions.hpp" />
 		<Unit filename="FileUtilities.cpp" />
-		<Unit filename="FileUtilities.h" />
+		<Unit filename="FileUtilities.hpp" />
+		<Unit filename="SaveRestore.cpp" />
+		<Unit filename="SaveRestore.hpp" />
 		<Unit filename="main.cpp" />
 		<Extensions>
 			<code_completion />
