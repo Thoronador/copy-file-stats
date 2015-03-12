@@ -22,6 +22,7 @@
 #define SAVERESTORE_HPP
 
 #include <string>
+#include <sys/stat.h>
 
 /** \brief generates a string that contains all required file stats
  *
@@ -31,5 +32,17 @@
  *
  */
 bool saveStats(const std::string& src_path, std::string& statLine);
+
+
+/** \brief creates file mode (for chmod) from a string like "rwxr-xr--"
+ *
+ * \param mode_string a valid mode string, e.g. "rwxr-xr--"
+ * \param mode   variable that will be used to store the resulting mode
+ * \return Returns true, if the string could be translated to a mode_t value.
+ *         Returns false otherwise.
+ * \remarks The value of parameter mode is undefined, if the function returns
+ *          false.
+ */
+bool stringToMode(const std::string& mode_string, mode_t& mode);
 
 #endif // SAVERESTORE_HPP

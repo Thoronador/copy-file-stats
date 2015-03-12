@@ -19,7 +19,6 @@
 */
 
 #include "SaveRestore.hpp"
-#include <sys/stat.h>
 #include <pwd.h>
 #include <grp.h>
 #include "AuxiliaryFunctions.hpp"
@@ -68,7 +67,7 @@ bool saveStats(const std::string& src_path, std::string& statLine)
     statLine.append("r");
   else
     statLine.append("-");
-  //write access for user
+  //write access for group
   if ((src_statbuf.st_mode & S_IWGRP) == S_IWGRP)
     statLine.append("w");
   else
@@ -141,5 +140,159 @@ bool saveStats(const std::string& src_path, std::string& statLine)
 
   //file name + space
   statLine += " " + src_path;
+  return true;
+}
+
+
+bool stringToMode(const std::string& mode_string, mode_t& mode)
+{
+  //string should be exactly nine characters long
+  if (mode_string.size() != 9)
+    return false;
+  //read access for user
+  switch(mode_string[0])
+  {
+    case 'r':
+         mode = S_IRUSR;
+         break;
+    case '-':
+         mode = 0;
+         break;
+    default:
+         //invalid character
+         return false;
+  } //swi
+
+  //write access for user
+  switch(mode_string[1])
+  {
+    case 'w':
+         mode |= S_IWUSR;
+         break;
+    case '-':
+         // mode |= 0;
+         break;
+    default:
+         //invalid character
+         return false;
+  } //swi
+
+  //executable status for user
+  switch(mode_string[2])
+  {
+    case 'x':
+         mode |= S_IXUSR;
+         break;
+    case '-':
+         // mode |= 0;
+         break;
+    case 's':
+         mode |= (S_IXUSR | S_ISUID);
+         break;
+    case 'S':
+         mode |= S_ISUID;
+         break;
+    default:
+         //invalid character
+         return false;
+  } //swi
+
+  //read access for group
+  switch(mode_string[3])
+  {
+    case 'r':
+         mode |= S_IRGRP;
+         break;
+    case '-':
+         //mode |= 0;
+         break;
+    default:
+         //invalid character
+         return false;
+  } //swi
+
+  //write access for group
+  switch(mode_string[4])
+  {
+    case 'w':
+         mode |= S_IWGRP;
+         break;
+    case '-':
+         // mode |= 0;
+         break;
+    default:
+         //invalid character
+         return false;
+  } //swi
+
+  //executable status for group
+  switch(mode_string[5])
+  {
+    case 'x':
+         mode |= S_IXGRP;
+         break;
+    case '-':
+         // mode |= 0;
+         break;
+    case 's':
+         mode |= (S_IXGRP | S_ISGID);
+         break;
+    case 'S':
+         mode |= S_ISGID;
+         break;
+    default:
+         //invalid character
+         return false;
+  } //swi
+
+  //read access for others
+  switch(mode_string[6])
+  {
+    case 'r':
+         mode |= S_IROTH;
+         break;
+    case '-':
+         //mode |= 0;
+         break;
+    default:
+         //invalid character
+         return false;
+  } //swi
+
+  //write access for others
+  switch(mode_string[7])
+  {
+    case 'w':
+         mode |= S_IWOTH;
+         break;
+    case '-':
+         // mode |= 0;
+         break;
+    default:
+         //invalid character
+         return false;
+  } //swi
+
+  //executable bit for others
+  switch(mode_string[8])
+  {
+    case 'x':
+         mode |= S_IXOTH;
+         break;
+    case '-':
+         // mode |= 0;
+         break;
+    case 't':
+         mode |= (S_IXOTH | S_ISVTX);
+         break;
+    case 'T':
+         mode |= S_ISVTX;
+         break;
+    default:
+         //invalid character
+         return false;
+  } //swi
+
+  //finished successfully
   return true;
 }
