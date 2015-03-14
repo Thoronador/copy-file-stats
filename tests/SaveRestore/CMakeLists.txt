@@ -4,8 +4,8 @@ cmake_minimum_required (VERSION 2.8)
 project(mode_test)
 
 set(mode_t_sources
-    ../../AuxiliaryFunctions.cpp
-    ../../SaveRestore.cpp
+    ../../program/AuxiliaryFunctions.cpp
+    ../../program/SaveRestore.cpp
     mode_test.cpp)
 
 add_definitions (-Wall -O2 -fexceptions -std=c++11)

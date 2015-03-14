@@ -24,10 +24,10 @@
 			<Add option="-Wall" />
 			<Add option="-fexceptions" />
 		</Compiler>
-		<Unit filename="../../AuxiliaryFunctions.cpp" />
-		<Unit filename="../../AuxiliaryFunctions.hpp" />
-		<Unit filename="../../SaveRestore.cpp" />
-		<Unit filename="../../SaveRestore.hpp" />
+		<Unit filename="../../program/AuxiliaryFunctions.cpp" />
+		<Unit filename="../../program/AuxiliaryFunctions.hpp" />
+		<Unit filename="../../program/SaveRestore.cpp" />
+		<Unit filename="../../program/SaveRestore.hpp" />
 		<Unit filename="mode_test.cpp" />
 		<Extensions>
 			<code_completion />
