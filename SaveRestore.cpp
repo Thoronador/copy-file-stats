@@ -126,7 +126,7 @@ bool saveStats(const std::string& src_path, std::string& statLine)
     statLine += std::string(pwd->pw_name);
   else
     statLine += "?";
-  statLine += "(" + uintToString(src_statbuf.st_uid) + ")";
+  statLine += " " + uintToString(src_statbuf.st_uid);
 
   //space before group name
   statLine += " ";
@@ -136,7 +136,7 @@ bool saveStats(const std::string& src_path, std::string& statLine)
     statLine += std::string(grp->gr_name);
   else
     statLine += "?";
-  statLine += "(" + uintToString(src_statbuf.st_gid) + ")";
+  statLine += " " + uintToString(src_statbuf.st_gid);
 
   //file name + space
   statLine += " " + src_path;
@@ -295,4 +295,165 @@ bool stringToMode(const std::string& mode_string, mode_t& mode)
 
   //finished successfully
   return true;
+}
+
+bool stringToUID(const std::string& user_name, const std::string& uid_string, uid_t& UID)
+{
+  if (user_name != "?")
+  {
+    const struct passwd* ptr = getpwnam(user_name.c_str());
+    if (ptr != NULL)
+    {
+      UID = ptr->pw_uid;
+      return true;
+    }
+  } //if user_name not "?"
+  //fall back on uid string
+  unsigned int possibleUID = 0;
+  if (stringToUint(uid_string, possibleUID))
+  {
+    UID = possibleUID;
+    return true;
+  } //if
+  return false;
+}
+
+bool stringToGID(const std::string& group_name, const std::string& gid_string, gid_t& GID)
+{
+  if (group_name != "?")
+  {
+    const struct group* ptr = getgrnam(group_name.c_str());
+    if (ptr != NULL)
+    {
+      GID = ptr->gr_gid;
+      return true;
+    }
+  } //if group_name not "?"
+  //fall back on gid string
+  unsigned int possibleGID = 0;
+  if (stringToUint(gid_string, possibleGID))
+  {
+    GID = possibleGID;
+    return true;
+  } //if
+  return false;
+}
+
+bool statLineToData(const std::string& statLine, mode_t& mode, uid_t& UID, gid_t& GID, std::string& filename)
+{
+  if (statLine.empty())
+    return false;
+
+  std::string modeString;
+  std::string name;
+  std::string idString;
+  filename.clear();
+
+  std::string::const_iterator sIter = statLine.begin();
+  while (sIter != statLine.end())
+  {
+    if (*sIter != ' ')
+    {
+      modeString.push_back(*sIter);
+    }
+    else
+    {
+      //space - break out of loop
+      break;
+    }
+    ++sIter;
+  } //while
+  if (!stringToMode(modeString, mode))
+    return false;
+
+  if (sIter == statLine.end())
+    return false;
+  ++sIter;
+  while (sIter != statLine.end())
+  {
+    if (*sIter != ' ')
+    {
+      name.push_back(*sIter);
+    }
+    else
+    {
+      //space - break out of loop
+      break;
+    }
+    ++sIter;
+  } //while
+
+  //skip space
+  if (sIter == statLine.end())
+    return false;
+  ++sIter;
+
+  while (sIter != statLine.end())
+  {
+    if (*sIter != ' ')
+    {
+      idString.push_back(*sIter);
+    }
+    else
+    {
+      //space - break out of loop
+      break;
+    }
+    ++sIter;
+  } //while
+
+  if (!stringToUID(name, idString, UID))
+    return false;
+
+  //skip space
+  if (sIter == statLine.end())
+    return false;
+  ++sIter;
+
+  name.clear();
+  idString.clear();
+
+  while (sIter != statLine.end())
+  {
+    if (*sIter != ' ')
+    {
+      name.push_back(*sIter);
+    }
+    else
+    {
+      //space - break out of loop
+      break;
+    }
+    ++sIter;
+  } //while
+
+  //skip space
+  if (sIter == statLine.end())
+    return false;
+  ++sIter;
+
+  while (sIter != statLine.end())
+  {
+    if (*sIter != ' ')
+    {
+      idString.push_back(*sIter);
+    }
+    else
+    {
+      //space - break out of loop
+      break;
+    }
+    ++sIter;
+  } //while
+
+  if (!stringToGID(name, idString, GID))
+    return false;
+
+  //skip space
+  if (sIter == statLine.end())
+    return false;
+  ++sIter;
+
+  filename = std::string(sIter, statLine.end());
+  return (!filename.empty());
 }
