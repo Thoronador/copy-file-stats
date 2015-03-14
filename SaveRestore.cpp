@@ -23,7 +23,14 @@
 #include <grp.h>
 #include "AuxiliaryFunctions.hpp"
 
-bool saveStats(const std::string& src_path, std::string& statLine)
+SaveRestore::SaveRestore(const bool useCache)
+: mUseCache(useCache),
+  mUserCache(std::map<std::string, uid_t>()),
+  mGroupCache(std::map<std::string, gid_t>())
+{
+}
+
+bool SaveRestore::saveStats(const std::string& src_path, std::string& statLine)
 {
   struct stat src_statbuf;
   int ret = lstat(src_path.c_str(), &src_statbuf);
@@ -144,7 +151,7 @@ bool saveStats(const std::string& src_path, std::string& statLine)
 }
 
 
-bool stringToMode(const std::string& mode_string, mode_t& mode)
+bool SaveRestore::stringToMode(const std::string& mode_string, mode_t& mode)
 {
   //string should be exactly nine characters long
   if (mode_string.size() != 9)
@@ -297,7 +304,7 @@ bool stringToMode(const std::string& mode_string, mode_t& mode)
   return true;
 }
 
-bool stringToUID(const std::string& user_name, const std::string& uid_string, uid_t& UID)
+bool SaveRestore::stringToUID(const std::string& user_name, const std::string& uid_string, uid_t& UID)
 {
   if (user_name != "?")
   {
@@ -318,7 +325,7 @@ bool stringToUID(const std::string& user_name, const std::string& uid_string, ui
   return false;
 }
 
-bool stringToGID(const std::string& group_name, const std::string& gid_string, gid_t& GID)
+bool SaveRestore::stringToGID(const std::string& group_name, const std::string& gid_string, gid_t& GID)
 {
   if (group_name != "?")
   {
@@ -339,7 +346,7 @@ bool stringToGID(const std::string& group_name, const std::string& gid_string, g
   return false;
 }
 
-bool statLineToData(const std::string& statLine, mode_t& mode, uid_t& UID, gid_t& GID, std::string& filename)
+bool SaveRestore::statLineToData(const std::string& statLine, mode_t& mode, uid_t& UID, gid_t& GID, std::string& filename)
 {
   if (statLine.empty())
     return false;
