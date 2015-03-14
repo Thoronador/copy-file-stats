@@ -23,6 +23,22 @@
 
 #include <string>
 
+
+/** \brief converts an unsigned integer value to its string representation
+ *
+ * \param value  the unsigned integer
+ * \return Returns a string that contains the given value.
+ */
 std::string uintToString(const unsigned int value);
+
+
+/** \brief tries to convert the string representation of an unsigned integer to an unsigned int
+ *
+ * \param str    the string that contains the number
+ * \param value  the unsigned int that will be used to store the result
+ * \return Returns true on success, false on failure.
+ * \remarks If false is returned, the value of parameter value is undefined.
+ */
+bool stringToUint(const std::string& str, unsigned int& value);
 
 #endif // AUXILIARYFUNCTIONS_HPP
