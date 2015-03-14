@@ -306,12 +306,21 @@ bool SaveRestore::stringToMode(const std::string& mode_string, mode_t& mode)
 
 bool SaveRestore::stringToUID(const std::string& user_name, const std::string& uid_string, uid_t& UID)
 {
-  if (user_name != "?")
+  if ((user_name != "?") && (!user_name.empty()))
   {
+    //Can we use the cache and is the name already in the cache?
+    if (mUseCache)
+    {
+      const std::map<std::string, uid_t>::const_iterator found = mUserCache.find(user_name);
+      if (found != mUserCache.end())
+        return found->second;
+    }
     const struct passwd* ptr = getpwnam(user_name.c_str());
     if (ptr != NULL)
     {
       UID = ptr->pw_uid;
+      if (mUseCache)
+        mUserCache[user_name] = ptr->pw_uid;
       return true;
     }
   } //if user_name not "?"
@@ -327,12 +336,22 @@ bool SaveRestore::stringToUID(const std::string& user_name, const std::string& u
 
 bool SaveRestore::stringToGID(const std::string& group_name, const std::string& gid_string, gid_t& GID)
 {
-  if (group_name != "?")
+  if ((group_name != "?") && (!group_name.empty()))
   {
+    //Can we use the cache and is the name in the cache already?
+    if (mUseCache)
+    {
+      const std::map<std::string, gid_t>::const_iterator found = mGroupCache.find(group_name);
+      if (found != mGroupCache.end())
+        return found->second;
+    }
+
     const struct group* ptr = getgrnam(group_name.c_str());
     if (ptr != NULL)
     {
       GID = ptr->gr_gid;
+      if (mUseCache)
+        mGroupCache[group_name] = ptr->gr_gid;
       return true;
     }
   } //if group_name not "?"
