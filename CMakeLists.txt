@@ -18,3 +18,7 @@ endif (CMAKE_COMPILER_IS_GNUCC)
 set( CMAKE_EXE_LINKER_FLAGS  "${CMAKE_EXE_LINKER_FLAGS} -s" )
 
 add_executable(copy-file-stats ${cfs_sources})
+
+# enable testing and add test suite directory
+enable_testing()
+add_subdirectory (tests)
