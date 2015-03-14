@@ -8,7 +8,7 @@ set(mode_t_sources
     ../../program/SaveRestore.cpp
     mode_test.cpp)
 
-add_definitions (-Wall -O2 -fexceptions -std=c++11)
+add_definitions (-Wall -O2 -fexceptions -std=c++0x)
 
 set( CMAKE_EXE_LINKER_FLAGS  "${CMAKE_EXE_LINKER_FLAGS} -s" )
 
