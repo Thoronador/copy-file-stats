@@ -13,3 +13,6 @@ script:
   - ctest
 notifications:
   email: false
+
+# container-based builds
+sudo: false
