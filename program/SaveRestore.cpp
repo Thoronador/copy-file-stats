@@ -19,9 +19,12 @@
 */
 
 #include "SaveRestore.hpp"
+#include <iostream>
+#include <vector>
 #include <pwd.h>
 #include <grp.h>
 #include "AuxiliaryFunctions.hpp"
+#include "FileUtilities.hpp"
 
 SaveRestore::SaveRestore(const bool useCache)
 : mUseCache(useCache),
@@ -30,7 +33,7 @@ SaveRestore::SaveRestore(const bool useCache)
 {
 }
 
-bool SaveRestore::saveStats(const std::string& src_path, std::string& statLine)
+bool SaveRestore::getStatString(const std::string& src_path, std::string& statLine)
 {
   struct stat src_statbuf;
   int ret = lstat(src_path.c_str(), &src_statbuf);
@@ -482,4 +485,77 @@ bool SaveRestore::statLineToData(const std::string& statLine, mode_t& mode, uid_
 
   filename = std::string(sIter, statLine.end());
   return (!filename.empty());
+}
+
+bool SaveRestore::save(const std::string& src_directory, const std::string& statFileName, const bool verbose)
+{
+  //We don't want to overwrite an existing file.
+  if (fileExists(statFileName))
+  {
+    if (verbose)
+      std::cout << "Error: file " << statFileName << " already exists and we do not want to overwrite it.\n";
+    return false;
+  }
+
+  //open file for writing
+  std::ofstream statStream(statFileName.c_str(), std::ios::out | std::ios::binary);
+  if (!statStream.good())
+  {
+    if (verbose)
+      std::cout << "Error: Could not create/open file " << statFileName << ".\n";
+    return false;
+  }
+
+  const bool success = saveRecursive(src_directory, statStream, verbose);
+  //close file
+  statStream.close();
+  return success;
+}
+
+bool SaveRestore::saveRecursive(const std::string& src_directory, std::ofstream& statStream, const bool verbose)
+{
+  const std::vector<FileEntry> files = getDirectoryFileList(src_directory);
+  //empty directory or directory does not exist
+  if (files.empty())
+  {
+    if (verbose)
+      std::cout << "Error: Directory \"" << src_directory << "\" does not exist or is empty.\n";
+    return false;
+  }
+
+
+  unsigned int i;
+  for (i = 0; i < files.size(); ++i)
+  {
+    if ((files[i].fileName != "..") and (files[i].fileName != "."))
+    {
+      //handle file/dir itself
+      std::string line;
+      if (!getStatString(src_directory+pathDelimiter+files[i].fileName, line))
+      {
+        if (verbose)
+          std::cout << "Error: Could not generate info line for file " << (src_directory+pathDelimiter+files[i].fileName) << ".\n";
+        return false;
+      }
+      //write to file
+      statStream.write(line.c_str(), line.size());
+      statStream.write("\n", 1);
+      if (!statStream.good())
+      {
+        if (verbose)
+          std::cout << "Error: Failed to write to info file.\n";
+        return false;
+      }
+
+      //handle directory content, if it's a directory
+      if (files[i].isDirectory)
+      {
+        if (!saveRecursive(src_directory+pathDelimiter+files[i].fileName, statStream, verbose))
+        {
+          return false;
+        }
+      }
+    }//if not dot or dot+dot
+  }//for
+  return true;
 }

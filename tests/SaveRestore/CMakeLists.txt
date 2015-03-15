@@ -6,6 +6,7 @@ project(mode_test)
 
 set(mode_t_sources
     ../../program/AuxiliaryFunctions.cpp
+    ../../program/FileUtilities.cpp
     ../../program/SaveRestore.cpp
     mode_test.cpp)
 
@@ -24,6 +25,7 @@ project(string_to_mode)
 
 set(string_to_mode_sources
     ../../program/AuxiliaryFunctions.cpp
+    ../../program/FileUtilities.cpp
     ../../program/SaveRestore.cpp
     string_to_mode.cpp)
 

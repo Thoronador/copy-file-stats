@@ -26,6 +26,8 @@
 		</Compiler>
 		<Unit filename="../../program/AuxiliaryFunctions.cpp" />
 		<Unit filename="../../program/AuxiliaryFunctions.hpp" />
+		<Unit filename="../../program/FileUtilities.cpp" />
+		<Unit filename="../../program/FileUtilities.hpp" />
 		<Unit filename="../../program/SaveRestore.cpp" />
 		<Unit filename="../../program/SaveRestore.hpp" />
 		<Unit filename="mode_test.cpp" />

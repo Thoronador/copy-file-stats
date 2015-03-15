@@ -207,3 +207,8 @@ bool copy_stats_recursive(const std::string& src_dir, const std::string& dest_di
   }//for
   return true;
 }
+
+bool fileExists(const std::string& fileName)
+{
+  return (access(fileName.c_str(), F_OK)==0);
+}

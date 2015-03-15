@@ -21,6 +21,7 @@
 #ifndef SAVERESTORE_HPP
 #define SAVERESTORE_HPP
 
+#include <fstream>
 #include <map>
 #include <string>
 #include <sys/stat.h>
@@ -44,7 +45,7 @@ class SaveRestore
      * \return Returns true, if function succeeded. Returns false otherwise.
      *
      */
-    static bool saveStats(const std::string& src_path, std::string& statLine);
+    static bool getStatString(const std::string& src_path, std::string& statLine);
 
 
     /** \brief creates file mode (for chmod) from a string like "rwxr-xr--"
@@ -94,10 +95,22 @@ class SaveRestore
      */
     bool statLineToData(const std::string& statLine, mode_t& mode, uid_t& UID, gid_t& GID, std::string& filename);
 
+
+    /** \brief tries to save the file information (permissions + owner/group) to a text file
+     *
+     * \param directory     the directory whose info shall be saved
+     * \param statFileName  name of the file that will be used to store the info
+     * \param verbose       if set to true, shows more info about errors
+     * \return Returns true, if all info was saved. Returns false otherwise.
+     *
+     */
+    static bool save(const std::string& src_directory, const std::string& statFileName, const bool verbose);
   private:
     bool mUseCache; /**< whether caches are used or not */
     std::map<std::string, uid_t> mUserCache;  /**< caches user name -> user ID associations */
     std::map<std::string, gid_t> mGroupCache; /**< caches group name -> group ID associations */
+
+    static bool saveRecursive(const std::string& src_directory, std::ofstream& statStream, const bool verbose);
 }; //class
 
 #endif // SAVERESTORE_HPP
