@@ -25,6 +25,16 @@
 #include <fstream>
 #include "../../program/SaveRestore.hpp"
 
+/* Covered functions:
+   This test checks whether all possible file modes handled by
+   SaveRestore::getStatString() and subsequently SaveRestore::statLineToData()
+   will be the same as the original file mode (which they should be).
+
+   In other words: It checks whether file permissions that are "encoded" by
+   SaveRestore::getStatString() can be properly "decoded" by SaveRestore::statLineToData()
+   and return the original file permissions.
+*/
+
 int main()
 {
   const unsigned int buffer_size = 50;

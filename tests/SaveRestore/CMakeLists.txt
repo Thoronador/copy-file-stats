@@ -17,7 +17,7 @@ set( CMAKE_EXE_LINKER_FLAGS  "${CMAKE_EXE_LINKER_FLAGS} -s" )
 add_executable(mode_test ${mode_t_sources})
 
 # add test for saving and restoring file modes
-add_test(class_SaveRestore_mode ${CMAKE_CURRENT_BINARY_DIR}/mode_test)
+add_test(class_SaveRestore_mode_codec ${CMAKE_CURRENT_BINARY_DIR}/mode_test)
 
 
 # test for SaveRestore::stringToMode() function
