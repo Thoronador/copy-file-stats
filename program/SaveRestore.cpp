@@ -559,3 +559,51 @@ bool SaveRestore::saveRecursive(const std::string& src_directory, std::ofstream&
   }//for
   return true;
 }
+
+bool SaveRestore::restore(const std::string& dest_directory, const std::string& statFileName, const bool verbose)
+{
+  if (!fileExists(statFileName))
+  {
+    if (verbose)
+      std::cout << "Error: file " << statFileName << " does not exist.\n";
+    return false;
+  }
+
+  //open file for reading
+  std::ifstream statStream(statFileName.c_str(), std::ios::in | std::ios::binary);
+  if (!statStream.good())
+  {
+    if (verbose)
+      std::cout << "Error: Could not open file " << statFileName << ".\n";
+    return false;
+  }
+
+
+  mode_t mode;
+  uid_t UID;
+  gid_t GID;
+  std::string file;
+
+  const unsigned int cMaxLine = 256;
+  char buffer[cMaxLine];
+  std::string line = "";
+  while (statStream.getline(buffer, cMaxLine-1))
+  {
+    buffer[cMaxLine-1] = '\0';
+    line = std::string(buffer);
+    if (!statLineToData(line, mode, UID, GID, file))
+    {
+      statStream.close();
+      if (verbose)
+        std::cout << "Error: Could not extract data from line \"" << line << "\"!\n";
+      return false;
+    } //if statLineToData() failed
+
+    #warning There is still work to be done here!
+    //TODO: go on and compare stats!
+
+  } //while
+
+  statStream.close();
+
+}

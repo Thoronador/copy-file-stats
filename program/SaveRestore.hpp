@@ -98,13 +98,22 @@ class SaveRestore
 
     /** \brief tries to save the file information (permissions + owner/group) to a text file
      *
-     * \param directory     the directory whose info shall be saved
+     * \param src_directory the directory whose info shall be saved
      * \param statFileName  name of the file that will be used to store the info
      * \param verbose       if set to true, shows more info about errors
      * \return Returns true, if all info was saved. Returns false otherwise.
-     *
      */
     static bool save(const std::string& src_directory, const std::string& statFileName, const bool verbose);
+
+
+    /** \brief tries to restore the file information (permissions + owner/group) from a text file
+     *
+     * \param dest_directory  the directory whose info shall be restored
+     * \param statFileName    name of the file that will be used to load the info
+     * \param verbose         if set to true, shows more info about errors
+     * \return Returns true, if all info was restored. Returns false otherwise.
+     */
+    bool restore(const std::string& dest_directory, const std::string& statFileName, const bool verbose);
   private:
     bool mUseCache; /**< whether caches are used or not */
     std::map<std::string, uid_t> mUserCache;  /**< caches user name -> user ID associations */
