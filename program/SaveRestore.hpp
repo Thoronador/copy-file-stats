@@ -41,11 +41,12 @@ class SaveRestore
     /** \brief generates a string that contains all required file stats
      *
      * \param src_path   file name of the source file
+     * \param removeSuffic  string that will be removed from the beginning of the file name
      * \param statLine   string that shall hold the information
      * \return Returns true, if function succeeded. Returns false otherwise.
      *
      */
-    static bool getStatString(const std::string& src_path, std::string& statLine);
+    static bool getStatString(const std::string& src_path, const std::string& removeSuffix, std::string& statLine);
 
 
     /** \brief creates file mode (for chmod) from a string like "rwxr-xr--"
@@ -119,7 +120,7 @@ class SaveRestore
     std::map<std::string, uid_t> mUserCache;  /**< caches user name -> user ID associations */
     std::map<std::string, gid_t> mGroupCache; /**< caches group name -> group ID associations */
 
-    static bool saveRecursive(const std::string& src_directory, std::ofstream& statStream, const bool verbose);
+    static bool saveRecursive(const std::string& src_directory, const std::string& removeSuffix, std::ofstream& statStream, const bool verbose);
 }; //class
 
 #endif // SAVERESTORE_HPP

@@ -36,7 +36,7 @@ SaveRestore::SaveRestore(const bool useCache)
 {
 }
 
-bool SaveRestore::getStatString(const std::string& src_path, std::string& statLine)
+bool SaveRestore::getStatString(const std::string& src_path, const std::string& removeSuffix, std::string& statLine)
 {
   struct stat src_statbuf;
   int ret = lstat(src_path.c_str(), &src_statbuf);
@@ -152,7 +152,23 @@ bool SaveRestore::getStatString(const std::string& src_path, std::string& statLi
   statLine += " " + uintToString(src_statbuf.st_gid);
 
   //file name + space
-  statLine += " " + src_path;
+  if (removeSuffix.empty())
+  {
+    statLine += " " + src_path;
+  }
+  else
+  {
+    if (src_path.substr(0, removeSuffix.size()) == removeSuffix)
+    {
+      std::string temp(src_path);
+      temp.erase(0, removeSuffix.size());
+      statLine += " " + temp;
+    }
+    else
+    {
+      statLine += " " + src_path;
+    }
+  } //else (removeSuffix not empty)
   return true;
 }
 
@@ -509,13 +525,13 @@ bool SaveRestore::save(const std::string& src_directory, const std::string& stat
     return false;
   }
 
-  const bool success = saveRecursive(src_directory, statStream, verbose);
+  const bool success = saveRecursive(src_directory, slashify(src_directory), statStream, verbose);
   //close file
   statStream.close();
   return success;
 }
 
-bool SaveRestore::saveRecursive(const std::string& src_directory, std::ofstream& statStream, const bool verbose)
+bool SaveRestore::saveRecursive(const std::string& src_directory, const std::string& removeSuffix, std::ofstream& statStream, const bool verbose)
 {
   const std::vector<FileEntry> files = getDirectoryFileList(src_directory);
   //empty directory or directory does not exist
@@ -534,7 +550,7 @@ bool SaveRestore::saveRecursive(const std::string& src_directory, std::ofstream&
     {
       //handle file/dir itself
       std::string line;
-      if (!getStatString(src_directory+pathDelimiter+files[i].fileName, line))
+      if (!getStatString(src_directory+pathDelimiter+files[i].fileName, removeSuffix, line))
       {
         if (verbose)
           std::cout << "Error: Could not generate info line for file " << (src_directory+pathDelimiter+files[i].fileName) << ".\n";
@@ -553,7 +569,7 @@ bool SaveRestore::saveRecursive(const std::string& src_directory, std::ofstream&
       //handle directory content, if it's a directory
       if (files[i].isDirectory)
       {
-        if (!saveRecursive(src_directory+pathDelimiter+files[i].fileName, statStream, verbose))
+        if (!saveRecursive(src_directory+pathDelimiter+files[i].fileName, removeSuffix, statStream, verbose))
         {
           return false;
         }
