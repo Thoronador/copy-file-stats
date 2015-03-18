@@ -167,7 +167,7 @@ bool copy_file_stats(const std::string& src_path, const std::string& dest_path, 
       }
       if (!dryRun)
       {
-        ret = chown(dest_path.c_str(), src_statbuf.st_uid, src_statbuf.st_gid);
+        ret = lchown(dest_path.c_str(), src_statbuf.st_uid, src_statbuf.st_gid);
         if (0!=ret)
         {
           int errorCode = errno;
