@@ -97,7 +97,7 @@ int main()
       rmdir(tempDir.c_str());
       return 1;
     }
-    if (!sr_instance.getStatString(tempFileName, statLine))
+    if (!sr_instance.getStatString(tempFileName, std::string(""), statLine))
     {
       std::cout << "Error: saveStats failed!\n";
       unlink(tempFileName.c_str());
