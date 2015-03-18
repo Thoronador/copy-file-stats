@@ -37,3 +37,24 @@ add_executable(string_to_mode ${string_to_mode_sources})
 
 # add test for getting file modes from strings
 add_test(class_SaveRestore_stringToMode ${CMAKE_CURRENT_BINARY_DIR}/string_to_mode)
+
+
+
+# stat file test
+project(stat_file_test)
+
+set(stat_file_test_sources
+    ../../program/AuxiliaryFunctions.cpp
+    ../../program/FileUtilities.cpp
+    ../../program/SaveRestore.cpp
+    statFile/stat_file_test.cpp)
+
+add_definitions (-Wall -O2 -fexceptions)
+
+set( CMAKE_EXE_LINKER_FLAGS  "${CMAKE_EXE_LINKER_FLAGS} -s" )
+
+add_executable(stat_file_test ${stat_file_test_sources})
+
+# add scripted stat file test
+add_test(NAME class_SaveRestore_save
+         COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/statFile/stat_file_test.sh $<TARGET_FILE:stat_file_test>)
