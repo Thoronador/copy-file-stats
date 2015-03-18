@@ -23,7 +23,6 @@
 
 #include <string>
 
-
 /** \brief converts an unsigned integer value to its string representation
  *
  * \param value  the unsigned integer
@@ -40,5 +39,14 @@ std::string uintToString(const unsigned int value);
  * \remarks If false is returned, the value of parameter value is undefined.
  */
 bool stringToUint(const std::string& str, unsigned int& value);
+
+
+/** \brief adds a slash or backslash (or whatever is the path delimiter on the current
+ * system) to the given path, if the path is not empty and has no path delimiter
+ * as the last character yet.
+ * \param path   the path that should (possibly) have an (back)slash
+ * \return Returns the path with added slash, if required. Otherwise returns unmodified path.
+ */
+std::string slashify(const std::string& path);
 
 #endif // AUXILIARYFUNCTIONS_HPP

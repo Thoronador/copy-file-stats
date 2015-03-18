@@ -21,8 +21,11 @@
 #include "SaveRestore.hpp"
 #include <iostream>
 #include <vector>
+#include <cerrno>  //for errno
+#include <cstring> //for strerror()
 #include <pwd.h>
 #include <grp.h>
+#include <unistd.h> //for lchown()
 #include "AuxiliaryFunctions.hpp"
 #include "FileUtilities.hpp"
 
@@ -584,6 +587,9 @@ bool SaveRestore::restore(const std::string& dest_directory, const std::string& 
   gid_t GID;
   std::string file;
 
+  struct stat dest_statbuf;
+  int ret = 0;
+
   const unsigned int cMaxLine = 256;
   char buffer[cMaxLine];
   std::string line = "";
@@ -599,11 +605,58 @@ bool SaveRestore::restore(const std::string& dest_directory, const std::string& 
       return false;
     } //if statLineToData() failed
 
-    #warning There is still work to be done here!
-    //TODO: go on and compare stats!
+    ret = lstat((dest_directory + file).c_str(), &dest_statbuf);
+    if (0 != ret)
+    {
+      const int errorCode = errno;
+      if (errorCode != ENOENT)
+      {
+        if (verbose)
+          std::cout << "Error while querying status of \"" << (dest_directory + file) << "\": Code "
+                    << errorCode << " (" << strerror(errorCode) << ").\n";
+        statStream.close();
+        return false;
+      }
+      else
+      {
+        //destination file does not exist, skip silently
+      } //else
+    }
+    else
+    {
+      if (dest_statbuf.st_mode != mode)
+      {
+        if (verbose)
+          std::cout << "Changing mode of "
+                    << (dest_directory + file) << " from " << std::oct << dest_statbuf.st_mode
+                  << " to " << std::oct << mode << std::dec <<"...\n";
+        ret = chmod((dest_directory + file).c_str(), mode);
+        if (0 != ret)
+        {
+          int errorCode = errno;
+          std::cout << "Error while changing mode of \"" << (dest_directory + file)
+                    << "\": Code " << errorCode << " (" << strerror(errorCode) << ").\n";
+          statStream.close();
+          return false;
+        }
+      } //if permissions do not match
 
+      if ((dest_statbuf.st_uid != UID) || (dest_statbuf.st_gid != GID))
+      {
+        ret = lchown((dest_directory + file).c_str(), UID, GID);
+        if (0 != ret)
+        {
+          int errorCode = errno;
+          statStream.close();
+          std::cout << "Error while changing ownership of \"" << (dest_directory + file)
+                    << "\": Code " << errorCode << " (" << strerror(errorCode)
+                    << ").\n";
+          return false;
+        }
+      } //if owners do not match
+    } //else (lstat succeeded)
   } //while
 
   statStream.close();
-
+  return true;
 }

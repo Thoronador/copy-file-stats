@@ -57,3 +57,21 @@ bool stringToUint(const std::string& str, unsigned int& value)
   }//for
   return true;
 }
+
+std::string slashify(const std::string& path)
+{
+  if (path.empty()) return path;
+  //Does it have a trailing (back)slash?
+  #if defined(_WIN32)
+  const char pathDelimiter = '\\';
+  #elif defined(__linux__) || defined(linux)
+  const char pathDelimiter = '/';
+  #else
+    #error "Unknown operating system!"
+  #endif
+  if (path[path.length()-1] != pathDelimiter)
+  {
+    return path + pathDelimiter;
+  }
+  return path;
+}
