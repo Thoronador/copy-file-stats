@@ -35,7 +35,6 @@ GROUP_ID=`id -g`
 # create some files
 touch $BASE_DIR/alpha
 chmod 0755 $BASE_DIR/alpha || echo "chmod failed (alpha)"
-#chown $USER:$GROUP $BASE_DIR/alpha
 
 touch $BASE_DIR/beta
 chmod 0644 $BASE_DIR/beta || echo "chmod failed (beta)"
@@ -45,6 +44,28 @@ chmod 0640 $BASE_DIR/gamma || echo "chmod failed (gamma)"
 
 touch $BASE_DIR/delta
 chmod 0600 $BASE_DIR/delta || echo "chmod failed (delta)"
+
+# -- create subdirectory
+mkdir $BASE_DIR/sub
+
+if [[ $? -ne 0 ]]
+then
+  echo "Failed to create subdirectory!"
+  exit 1
+fi
+
+chmod 0777 $BASE_DIR/sub
+
+# -- create some files in subdirectory
+touch $BASE_DIR/sub/epsilon
+chmod 0124 $BASE_DIR/sub/epsilon || echo "chmod failed (epsilon)"
+
+touch $BASE_DIR/sub/riemann
+chmod 0654 $BASE_DIR/sub/riemann || echo "chmod failed (riemann)"
+
+touch $BASE_DIR/sub/zeta
+chmod 0432 $BASE_DIR/sub/zeta || echo "chmod failed (zeta)"
+
 
 if [[ $? -ne 0 ]]
 then
