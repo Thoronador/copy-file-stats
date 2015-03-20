@@ -33,16 +33,16 @@ GROUP_NAME=`id -gn`
 GROUP_ID=`id -g`
 
 # create some files
-touch $BASE_DIR/alpha
+touch $BASE_DIR/alpha || echo "touch failed (alpha)"
 chmod 0755 $BASE_DIR/alpha || echo "chmod failed (alpha)"
 
-touch $BASE_DIR/beta
+touch $BASE_DIR/beta || echo "touch failed (beta)"
 chmod 0644 $BASE_DIR/beta || echo "chmod failed (beta)"
 
-touch $BASE_DIR/gamma
+touch $BASE_DIR/gamma || echo "touch failed (gamma)"
 chmod 0640 $BASE_DIR/gamma || echo "chmod failed (gamma)"
 
-touch $BASE_DIR/delta
+touch $BASE_DIR/delta || echo "touch failed (delta)"
 chmod 0600 $BASE_DIR/delta || echo "chmod failed (delta)"
 
 # -- create subdirectory
@@ -57,13 +57,13 @@ fi
 chmod 0777 $BASE_DIR/sub
 
 # -- create some files in subdirectory
-touch $BASE_DIR/sub/epsilon
+touch $BASE_DIR/sub/epsilon || echo "touch failed (epsilon)"
 chmod 0124 $BASE_DIR/sub/epsilon || echo "chmod failed (epsilon)"
 
-touch $BASE_DIR/sub/riemann
+touch $BASE_DIR/sub/riemann || echo "touch failed (riemann)"
 chmod 0654 $BASE_DIR/sub/riemann || echo "chmod failed (riemann)"
 
-touch $BASE_DIR/sub/zeta
+touch $BASE_DIR/sub/zeta || echo "touch failed (zeta)"
 chmod 0432 $BASE_DIR/sub/zeta || echo "chmod failed (zeta)"
 
 
@@ -104,6 +104,11 @@ then
     echo "Template-based file:"
     cat $COMPARE_STAT_FILE
     echo "---- end of files ---"
+    echo ""
+    echo "Directory listings:\nbase:"
+    ls -la $BASE_DIR
+    echo "sub:"
+    ls -la $BASE_DIR/sub
   fi
 else
   echo "Executable returned non-zero exit code ($TEST_EXIT_CODE)."
