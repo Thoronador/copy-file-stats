@@ -542,6 +542,17 @@ bool SaveRestore::saveRecursive(const std::string& src_directory, const std::str
     return false;
   }
 
+  #ifdef DEBUG
+  {
+    std::cout << "DEBUG: content of files (" << files.size() << " entries):\n";
+    unsigned int i;
+    for (i = 0; i < files.size(); ++i)
+    {
+      std::cout << (files[i].isDirectory ? "  d " : "  f ") << files[i].fileName << "\n";
+    } //for
+    std::cout << "--- end of files ---\n";
+  } //scope
+  #endif // DEBUG
 
   unsigned int i;
   for (i = 0; i < files.size(); ++i)

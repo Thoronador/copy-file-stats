@@ -57,7 +57,18 @@ std::vector<FileEntry> getDirectoryFileList(const std::string& Directory)
   while (entry != NULL)
   {
     one.fileName = std::string(entry->d_name);
-    one.isDirectory = entry->d_type==DT_DIR;
+    struct stat statbuf;
+    int ret = lstat((Directory + pathDelimiter + one.fileName).c_str(), &statbuf);
+    if (0 != ret)
+    {
+      //error while querying status of file, fall back to DT_DIR
+      one.isDirectory = entry->d_type==DT_DIR;
+    }
+    else
+    {
+      one.isDirectory = ((statbuf.st_mode & S_IFDIR) == S_IFDIR);
+    }
+
     //check for socket, pipes, block device and char device, which we don't want
     if (entry->d_type != DT_SOCK && entry->d_type != DT_FIFO && entry->d_type != DT_BLK
         && entry->d_type != DT_CHR)
