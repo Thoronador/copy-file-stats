@@ -54,7 +54,7 @@ then
   exit 1
 fi
 
-chmod 0777 $BASE_DIR/sub
+chmod 0777 $BASE_DIR/sub || echo "chmod failed (sub)"
 
 # -- create some files in subdirectory
 touch $BASE_DIR/sub/epsilon || echo "touch failed (epsilon)"
@@ -66,6 +66,37 @@ chmod 0654 $BASE_DIR/sub/riemann || echo "chmod failed (riemann)"
 touch $BASE_DIR/sub/zeta || echo "touch failed (zeta)"
 chmod 0432 $BASE_DIR/sub/zeta || echo "chmod failed (zeta)"
 
+# -- create directory within subdirectory
+mkdir $BASE_DIR/sub/marine
+
+if [[ $? -ne 0 ]]
+then
+  echo "Failed to create subdirectory!"
+  exit 1
+fi
+
+chmod 0777 $BASE_DIR/sub/marine || echo "chmod failed (marine)"
+
+# create some files in .../sub/marine
+touch $BASE_DIR/sub/marine/anachronistic || echo "touch failed (anachronistic)"
+chmod 0644 $BASE_DIR/sub/marine/anachronistic || echo "chmod failed (anachronistic)"
+
+touch $BASE_DIR/sub/marine/brontosaurus || echo "touch failed (brontosaurus)"
+chmod 0500 $BASE_DIR/sub/marine/brontosaurus || echo "chmod failed (brontosaurus)"
+
+touch $BASE_DIR/sub/marine/catharsis || echo "touch failed (catharsis)"
+chmod 0404 $BASE_DIR/sub/marine/catharsis || echo "chmod failed (catharsis)"
+
+# -- create another subdirectory
+mkdir $BASE_DIR/trivial
+
+if [[ $? -ne 0 ]]
+then
+  echo "Failed to create subdirectory!"
+  exit 1
+fi
+
+chmod 0777 $BASE_DIR/trivial || echo "chmod failed (trivial)"
 
 if [[ $? -ne 0 ]]
 then
@@ -105,10 +136,13 @@ then
     cat $COMPARE_STAT_FILE
     echo "---- end of files ---"
     echo ""
-    echo "Directory listings:\nbase:"
+    echo "Directory listings:"
+    echo "base:"
     ls -la $BASE_DIR
     echo "sub:"
     ls -la $BASE_DIR/sub
+    echo "marine:"
+    ls -la $BASE_DIR/sub/marine
   fi
 else
   echo "Executable returned non-zero exit code ($TEST_EXIT_CODE)."

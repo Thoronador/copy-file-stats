@@ -6,3 +6,8 @@ rwxrwxrwx USER_NAME USER_ID GROUP_NAME GROUP_ID sub
 --x-w-r-- USER_NAME USER_ID GROUP_NAME GROUP_ID sub/epsilon
 rw-r-xr-- USER_NAME USER_ID GROUP_NAME GROUP_ID sub/riemann
 r---wx-w- USER_NAME USER_ID GROUP_NAME GROUP_ID sub/zeta
+rwxrwxrwx USER_NAME USER_ID GROUP_NAME GROUP_ID sub/marine
+rw-r--r-- USER_NAME USER_ID GROUP_NAME GROUP_ID sub/marine/anachronistic
+r-x------ USER_NAME USER_ID GROUP_NAME GROUP_ID sub/marine/brontosaurus
+r-----r-- USER_NAME USER_ID GROUP_NAME GROUP_ID sub/marine/catharsis
+rwxrwxrwx USER_NAME USER_ID GROUP_NAME GROUP_ID trivial
