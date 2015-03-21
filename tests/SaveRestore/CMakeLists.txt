@@ -27,7 +27,7 @@ set(string_to_mode_sources
     ../../program/AuxiliaryFunctions.cpp
     ../../program/FileUtilities.cpp
     ../../program/SaveRestore.cpp
-    string_to_mode.cpp)
+    stringToMode/string_to_mode.cpp)
 
 add_definitions (-Wall -O2 -fexceptions -std=c++0x)
 
