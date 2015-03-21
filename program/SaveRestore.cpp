@@ -561,10 +561,10 @@ bool SaveRestore::saveRecursive(const std::string& src_directory, const std::str
     {
       //handle file/dir itself
       std::string line;
-      if (!getStatString(src_directory+pathDelimiter+files[i].fileName, removeSuffix, line))
+      if (!getStatString(slashify(src_directory)+files[i].fileName, removeSuffix, line))
       {
         if (verbose)
-          std::cout << "Error: Could not generate info line for file " << (src_directory+pathDelimiter+files[i].fileName) << ".\n";
+          std::cout << "Error: Could not generate info line for file " << (slashify(src_directory)+files[i].fileName) << ".\n";
         return false;
       }
       //write to file
@@ -580,7 +580,7 @@ bool SaveRestore::saveRecursive(const std::string& src_directory, const std::str
       //handle directory content, if it's a directory
       if (files[i].isDirectory)
       {
-        if (!saveRecursive(src_directory+pathDelimiter+files[i].fileName, removeSuffix, statStream, verbose))
+        if (!saveRecursive(slashify(src_directory)+files[i].fileName, removeSuffix, statStream, verbose))
         {
           return false;
         }
@@ -633,7 +633,7 @@ bool SaveRestore::restore(const std::string& dest_directory, const std::string& 
     } //if statLineToData() failed
 
 
-    const std::string destinationFile(dest_directory + pathDelimiter + file);
+    const std::string destinationFile(slashify(dest_directory) + file);
 
     ret = lstat(destinationFile.c_str(), &dest_statbuf);
     if (0 != ret)
