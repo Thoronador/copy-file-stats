@@ -632,21 +632,26 @@ bool SaveRestore::restore(const std::string& dest_directory, const std::string& 
       return false;
     } //if statLineToData() failed
 
-    ret = lstat((dest_directory + file).c_str(), &dest_statbuf);
+
+    const std::string destinationFile(dest_directory + pathDelimiter + file);
+
+    ret = lstat(destinationFile.c_str(), &dest_statbuf);
     if (0 != ret)
     {
       const int errorCode = errno;
       if (errorCode != ENOENT)
       {
         if (verbose)
-          std::cout << "Error while querying status of \"" << (dest_directory + file) << "\": Code "
+          std::cout << "Error while querying status of \"" << destinationFile << "\": Code "
                     << errorCode << " (" << strerror(errorCode) << ").\n";
         statStream.close();
         return false;
       }
       else
       {
-        //destination file does not exist, skip silently
+        //destination file does not exist, skip silently - except when verbose
+        if (verbose)
+          std::cout << "Info: file \""<<destinationFile<<"\" does not exist, skipping.\n";
       } //else
     }
     else
@@ -655,13 +660,13 @@ bool SaveRestore::restore(const std::string& dest_directory, const std::string& 
       {
         if (verbose)
           std::cout << "Changing mode of "
-                    << (dest_directory + file) << " from " << std::oct << dest_statbuf.st_mode
+                    << destinationFile << " from " << std::oct << dest_statbuf.st_mode
                   << " to " << std::oct << mode << std::dec <<"...\n";
-        ret = chmod((dest_directory + file).c_str(), mode);
+        ret = chmod(destinationFile.c_str(), mode);
         if (0 != ret)
         {
           int errorCode = errno;
-          std::cout << "Error while changing mode of \"" << (dest_directory + file)
+          std::cout << "Error while changing mode of \"" << destinationFile
                     << "\": Code " << errorCode << " (" << strerror(errorCode) << ").\n";
           statStream.close();
           return false;
@@ -675,7 +680,7 @@ bool SaveRestore::restore(const std::string& dest_directory, const std::string& 
         {
           int errorCode = errno;
           statStream.close();
-          std::cout << "Error while changing ownership of \"" << (dest_directory + file)
+          std::cout << "Error while changing ownership of \"" << destinationFile
                     << "\": Code " << errorCode << " (" << strerror(errorCode)
                     << ").\n";
           return false;

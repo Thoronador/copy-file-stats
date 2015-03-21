@@ -22,23 +22,26 @@
 #include "../../../program/SaveRestore.hpp"
 
 /* Covered functions in test:
-   This program tests the function SaveRestore::save() and its ability to
-   save current file stats to a file, the so-called "stat file".
-   Afterwards, the produced stat file is compared against a reference file to
-   verify that the produced file matches the expected result. The comparison
-   is performed by a Bash script: stat-file-test.sh. This script is also used
-   to set up the files and directories and their permissions (with the help of
-   chown).
+   This program tests the function SaveRestore::restore() and its ability to
+   restore file stats from a given "stat file".
+   Afterwards, the current stats are written to another stat file, which is
+   then compared against a reference file to verify that the produced file
+   matches the expected result and thus the SaveRestore::restore() function did
+   its job as expected.
+   The comparison is performed by a Bash script: stat-file-test.sh. This script
+   is also used to set up the files and directories and their permissions
+   (with the help of chown) for this test.
 */
 
 int main(int argc, char** argv)
 {
   // check command line arguments
-  if (argc < 3)
+  if (argc < 4)
   {
     std::cout << "Hint: This program expects two parameters:\n"
               << "  1st) path to base directory for this test\n"
-              << "  2nd) path of the \"stat file\" that will be created during the test.\n"
+              << "  2nd) path of the \"stat file\" that will be used as source during the test.\n"
+              << "  3rd) path of the \"stat file\" that will be used as output during the test.\n"
               << "Aborting.\n";
     return 1;
   }
@@ -54,16 +57,39 @@ int main(int argc, char** argv)
     return 1;
   }
   std::string baseDir = std::string(argv[1]);
-  // -- location of stat file
+  // -- location of "source" stat file
   if (argv[2] == NULL)
   {
     std::cout << "Error: argv[2] is a null pointer!\n";
     return 1;
   }
-  const std::string statFile = std::string(argv[2]);
+  const std::string statFileSource = std::string(argv[2]);
+  // -- location of "output" stat file
+  if (argv[3] == NULL)
+  {
+    std::cout << "Error: argv[3] is a null pointer!\n";
+    return 1;
+  }
+  const std::string statFileOutput = std::string(argv[3]);
+
+  //Source and output file names shall not be the same.
+  if (statFileOutput == statFileSource)
+  {
+    std::cout << "Error: Source and output file names are equal!\n";
+    return 1;
+  }
 
 
-  if (!SaveRestore::save(baseDir, statFile, true))
+  SaveRestore testInstance;
+  if (!testInstance.restore(baseDir, statFileSource, true))
+  {
+    std::cout << "SaveRestore::restore() failed!\n";
+    return 1;
+  }
+  std::cout << "Info: SaveRestore::restore() succeeded.\n";
+
+  //Everthing went fine so far. Let's save the current state to another file.
+  if (!SaveRestore::save(baseDir, statFileOutput, true))
   {
     std::cout << "SaveRestore::save() failed!\n";
     return 1;

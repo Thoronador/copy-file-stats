@@ -55,6 +55,26 @@ set( CMAKE_EXE_LINKER_FLAGS  "${CMAKE_EXE_LINKER_FLAGS} -s" )
 
 add_executable(save_stat_file_test ${save_stat_file_test_sources})
 
-# add scripted stat file test
+# add script for SaveRestore::save() stat file test
 add_test(NAME class_SaveRestore_save
          COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/save/stat_file_test.sh $<TARGET_FILE:save_stat_file_test>)
+
+
+# restore test with stat file
+project(restore_stat_file_test)
+
+set(restore_stat_file_test_sources
+    ../../program/AuxiliaryFunctions.cpp
+    ../../program/FileUtilities.cpp
+    ../../program/SaveRestore.cpp
+    restore/stat_file_test.cpp)
+
+add_definitions (-Wall -O2 -fexceptions)
+
+set( CMAKE_EXE_LINKER_FLAGS  "${CMAKE_EXE_LINKER_FLAGS} -s" )
+
+add_executable(restore_stat_file_test ${restore_stat_file_test_sources})
+
+# add script for SaveRestore::restore() stat file test
+add_test(NAME class_SaveRestore_restore
+         COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/restore/stat_file_test.sh $<TARGET_FILE:restore_stat_file_test>)
