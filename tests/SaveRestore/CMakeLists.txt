@@ -40,21 +40,21 @@ add_test(class_SaveRestore_stringToMode ${CMAKE_CURRENT_BINARY_DIR}/string_to_mo
 
 
 
-# stat file test
-project(stat_file_test)
+# save test with stat file
+project(save_stat_file_test)
 
-set(stat_file_test_sources
+set(save_stat_file_test_sources
     ../../program/AuxiliaryFunctions.cpp
     ../../program/FileUtilities.cpp
     ../../program/SaveRestore.cpp
-    statFile/stat_file_test.cpp)
+    save/stat_file_test.cpp)
 
 add_definitions (-Wall -O2 -fexceptions)
 
 set( CMAKE_EXE_LINKER_FLAGS  "${CMAKE_EXE_LINKER_FLAGS} -s" )
 
-add_executable(stat_file_test ${stat_file_test_sources})
+add_executable(save_stat_file_test ${save_stat_file_test_sources})
 
 # add scripted stat file test
 add_test(NAME class_SaveRestore_save
-         COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/statFile/stat_file_test.sh $<TARGET_FILE:stat_file_test>)
+         COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/save/stat_file_test.sh $<TARGET_FILE:save_stat_file_test>)
