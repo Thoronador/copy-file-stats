@@ -590,7 +590,7 @@ bool SaveRestore::saveRecursive(const std::string& src_directory, const std::str
   return true;
 }
 
-bool SaveRestore::restore(const std::string& dest_directory, const std::string& statFileName, const bool verbose)
+bool SaveRestore::restore(const std::string& dest_directory, const std::string& statFileName, const bool verbose, const bool dryRun)
 {
   if (!fileExists(statFileName))
   {
@@ -658,33 +658,45 @@ bool SaveRestore::restore(const std::string& dest_directory, const std::string& 
     {
       if (dest_statbuf.st_mode != mode)
       {
-        if (verbose)
-          std::cout << "Changing mode of "
+        if (verbose or dryRun)
+          std::cout << (dryRun ? "Would change mode of " : "Changing mode of ")
                     << destinationFile << " from " << std::oct << dest_statbuf.st_mode
                   << " to " << std::oct << mode << std::dec <<"...\n";
-        ret = chmod(destinationFile.c_str(), mode);
-        if (0 != ret)
+        if (!dryRun)
         {
-          int errorCode = errno;
-          std::cout << "Error while changing mode of \"" << destinationFile
-                    << "\": Code " << errorCode << " (" << strerror(errorCode) << ").\n";
-          statStream.close();
-          return false;
-        }
+          ret = chmod(destinationFile.c_str(), mode);
+          if (0 != ret)
+          {
+            int errorCode = errno;
+            std::cout << "Error while changing mode of \"" << destinationFile
+                      << "\": Code " << errorCode << " (" << strerror(errorCode) << ").\n";
+            statStream.close();
+            return false;
+          } //if ret != 0
+        } //if not dryRun
       } //if permissions do not match
 
       if ((dest_statbuf.st_uid != UID) || (dest_statbuf.st_gid != GID))
       {
-        ret = lchown((dest_directory + file).c_str(), UID, GID);
-        if (0 != ret)
+        if (verbose or dryRun)
         {
-          int errorCode = errno;
-          statStream.close();
-          std::cout << "Error while changing ownership of \"" << destinationFile
-                    << "\": Code " << errorCode << " (" << strerror(errorCode)
-                    << ").\n";
-          return false;
+          std::cout << (dryRun ? "Would change ownership of \"" : "Changing ownership of \"")
+                    << destinationFile << "\" from " << getHumanReadableOwnership(dest_statbuf)
+                    << " to " << getHumanReadableOwnership(UID, GID) << "...\n";
         }
+        if (!dryRun)
+        {
+          ret = lchown((dest_directory + file).c_str(), UID, GID);
+          if (0 != ret)
+          {
+            int errorCode = errno;
+            statStream.close();
+            std::cout << "Error while changing ownership of \"" << destinationFile
+                      << "\": Code " << errorCode << " (" << strerror(errorCode)
+                      << ").\n";
+            return false;
+          } //if 0 != ret
+        } //if not dry run
       } //if owners do not match
     } //else (lstat succeeded)
   } //while

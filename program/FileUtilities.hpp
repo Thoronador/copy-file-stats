@@ -23,6 +23,7 @@
 
 #include <string>
 #include <vector>
+#include <sys/stat.h>
 
 #if defined(_WIN32)
   const char pathDelimiter = '\\';
@@ -43,6 +44,17 @@ struct FileEntry {
 
 /* returns a list of all files in the given directory as a vector */
 std::vector<FileEntry> getDirectoryFileList(const std::string& Directory);
+
+
+/** \brief transforms user ID and group ID into names
+ *
+ * \param userID  the user ID
+ * \param groupID the group ID
+ * \return Returns a string like "username:groupname".
+ */
+std::string getHumanReadableOwnership(const uid_t userID, const gid_t groupID);
+
+std::string getHumanReadableOwnership(const struct stat& statbuf);
 
 /* copies file permissions and/or ownership from file src_path to dest_path without copying the file itself
 

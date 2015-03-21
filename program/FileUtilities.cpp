@@ -22,7 +22,6 @@
 #include <iostream>
 #include <cerrno>
 #include <cstring>
-#include <sys/stat.h>
 #include <pwd.h>
 #include <grp.h>
 #include <unistd.h>
@@ -86,19 +85,24 @@ std::vector<FileEntry> getDirectoryFileList(const std::string& Directory)
 
 std::string getHumanReadableOwnership(const struct stat& statbuf)
 {
+  return getHumanReadableOwnership(statbuf.st_uid, statbuf.st_gid);
+}
+
+std::string getHumanReadableOwnership(const uid_t userID, const gid_t groupID)
+{
   std::string result = "";
-  struct passwd *pwd = getpwuid(statbuf.st_uid);
+  struct passwd *pwd = getpwuid(userID);
   if (NULL!=pwd)
     result = std::string(pwd->pw_name);
   else
-    result = uintToString(statbuf.st_uid);
+    result = uintToString(userID);
   result = result + ":";
 
-  struct group * grp = getgrgid(statbuf.st_gid);
+  struct group * grp = getgrgid(groupID);
   if (NULL!=grp)
     result = result + std::string(grp->gr_name);
   else
-    result = result + uintToString(statbuf.st_gid);
+    result = result + uintToString(groupID);
   return result;
 }
 

@@ -81,7 +81,7 @@ int main(int argc, char** argv)
 
 
   SaveRestore testInstance;
-  if (!testInstance.restore(baseDir, statFileSource, true))
+  if (!testInstance.restore(baseDir, statFileSource, true, false))
   {
     std::cout << "SaveRestore::restore() failed!\n";
     return 1;
