@@ -39,7 +39,6 @@ add_executable(string_to_mode ${string_to_mode_sources})
 add_test(class_SaveRestore_stringToMode ${CMAKE_CURRENT_BINARY_DIR}/string_to_mode)
 
 
-
 # save test with stat file
 project(save_stat_file_test)
 
@@ -58,6 +57,10 @@ add_executable(save_stat_file_test ${save_stat_file_test_sources})
 # add script for SaveRestore::save() stat file test
 add_test(NAME class_SaveRestore_save
          COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/save/stat_file_test.sh $<TARGET_FILE:save_stat_file_test>)
+
+# same, but with slash as last character in directory path
+add_test(NAME class_SaveRestore_save_slash
+         COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/save/stat_file_test_with_slash.sh $<TARGET_FILE:save_stat_file_test>)
 
 
 # restore test with stat file
@@ -78,3 +81,7 @@ add_executable(restore_stat_file_test ${restore_stat_file_test_sources})
 # add script for SaveRestore::restore() stat file test
 add_test(NAME class_SaveRestore_restore
          COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/restore/stat_file_test.sh $<TARGET_FILE:restore_stat_file_test>)
+
+# same, but with slash as last character in directory path
+add_test(NAME class_SaveRestore_restore_slash
+         COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/restore/stat_file_test_with_slash.sh $<TARGET_FILE:restore_stat_file_test>)
