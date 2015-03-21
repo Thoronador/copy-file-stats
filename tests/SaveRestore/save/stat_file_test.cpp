@@ -69,6 +69,6 @@ int main(int argc, char** argv)
     return 1;
   }
 
-  //Everthing went fine... so far.
+  //Everything went fine... so far.
   return 0;
 }

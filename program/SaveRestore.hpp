@@ -111,11 +111,13 @@ class SaveRestore
      *
      * \param dest_directory  the directory whose info shall be restored
      * \param statFileName    name of the file that will be used to load the info
+     * \param permissions     If set to true, permissions of dest_directory's contents will be adjusted.
+     * \param ownership       If set to true, ownership of dest_directory's contents will be adjusted.
      * \param verbose         if set to true, shows more info about errors
      * \param dryRun          If set to true, no actual changes will be made, but the function just shows what would be changed.
      * \return Returns true, if all info was restored. Returns false otherwise.
      */
-    bool restore(const std::string& dest_directory, const std::string& statFileName, const bool verbose, const bool dryRun);
+    bool restore(const std::string& dest_directory, const std::string& statFileName, const bool permissions, const bool ownership, const bool verbose, const bool dryRun);
   private:
     bool mUseCache; /**< whether caches are used or not */
     std::map<std::string, uid_t> mUserCache;  /**< caches user name -> user ID associations */

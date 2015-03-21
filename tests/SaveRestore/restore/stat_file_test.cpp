@@ -81,20 +81,20 @@ int main(int argc, char** argv)
 
 
   SaveRestore testInstance;
-  if (!testInstance.restore(baseDir, statFileSource, true, false))
+  if (!testInstance.restore(baseDir, statFileSource, true, true, true, false))
   {
     std::cout << "SaveRestore::restore() failed!\n";
     return 1;
   }
   std::cout << "Info: SaveRestore::restore() succeeded.\n";
 
-  //Everthing went fine so far. Let's save the current state to another file.
+  //Everything went fine so far. Let's save the current state to another file.
   if (!SaveRestore::save(baseDir, statFileOutput, true))
   {
     std::cout << "SaveRestore::save() failed!\n";
     return 1;
   }
 
-  //Everthing went fine... so far.
+  //Everything went fine... so far.
   return 0;
 }
