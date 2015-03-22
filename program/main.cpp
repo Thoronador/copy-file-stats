@@ -27,7 +27,7 @@ const int rcInvalidParameter = 1;
 void showGPLNotice()
 {
   std::cout << "copy-file-stats\n"
-            << "  Copyright (C) 2014 Thoronador\n"
+            << "  Copyright (C) 2014, 2015  Thoronador\n"
             << "\n"
             << "  This programme is free software: you can redistribute it and/or\n"
             << "  modify it under the terms of the GNU General Public License as published\n"
@@ -51,11 +51,12 @@ void showHelp()
             << "copy-file-stats [options] --restore STAT_FILE DESTINATION_DIR\n"
             << "\n"
             << "options:\n"
-            << "  --help           - displays this help message and quits\n"
+            << "  --help           - display this help message and quit\n"
             << "  -?               - same as --help\n"
-            << "  --version        - displays the version of the programme and quits\n"
+            << "  --version        - display the version of the programme and quit\n"
             << "  -v               - same as --version\n"
-            << "  --silent         - produces less output about ongoing changes\n"
+            << "  --license, -l    - show license information and quit\n"
+            << "  --silent         - produce less output about ongoing changes\n"
             << "  --no-ownership   - do not change file ownership\n"
             << "  --no-chown       - alias for --no-ownership\n"
             << "  --no-permissions - do not change file permissions\n"
@@ -79,7 +80,7 @@ void showHelp()
 
 void showVersion()
 {
-  std::cout << "copy-file-stats, version 0.4, 2015-03-22\n";
+  std::cout << "copy-file-stats, version 0.4.1, 2015-03-22\n";
 }
 
 int main(int argc, char **argv)
