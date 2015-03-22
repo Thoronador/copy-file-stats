@@ -599,8 +599,7 @@ bool SaveRestore::restore(const std::string& dest_directory, const std::string& 
   }
   if (!fileExists(statFileName))
   {
-    if (verbose)
-      std::cout << "Error: file " << statFileName << " does not exist.\n";
+    std::cout << "Error: file " << statFileName << " does not exist.\n";
     return false;
   }
 
@@ -608,8 +607,7 @@ bool SaveRestore::restore(const std::string& dest_directory, const std::string& 
   std::ifstream statStream(statFileName.c_str(), std::ios::in | std::ios::binary);
   if (!statStream.good())
   {
-    if (verbose)
-      std::cout << "Error: Could not open file " << statFileName << ".\n";
+    std::cout << "Error: Could not open file " << statFileName << ".\n";
     return false;
   }
 
@@ -632,8 +630,7 @@ bool SaveRestore::restore(const std::string& dest_directory, const std::string& 
     if (!statLineToData(line, mode, UID, GID, file))
     {
       statStream.close();
-      if (verbose)
-        std::cout << "Error: Could not extract data from line \"" << line << "\"!\n";
+      std::cout << "Error: Could not extract data from line \"" << line << "\"!\n";
       return false;
     } //if statLineToData() failed
 
@@ -646,16 +643,15 @@ bool SaveRestore::restore(const std::string& dest_directory, const std::string& 
       const int errorCode = errno;
       if (errorCode != ENOENT)
       {
-        if (verbose)
-          std::cout << "Error while querying status of \"" << destinationFile << "\": Code "
-                    << errorCode << " (" << strerror(errorCode) << ").\n";
+        std::cout << "Error while querying status of \"" << destinationFile << "\": Code "
+                  << errorCode << " (" << strerror(errorCode) << ").\n";
         statStream.close();
         return false;
       }
       else
       {
         //destination file does not exist, skip silently - except when verbose
-        if (verbose)
+        if (verbose or dryRun)
           std::cout << "Info: file \""<<destinationFile<<"\" does not exist, skipping.\n";
       } //else
     }
@@ -701,7 +697,7 @@ bool SaveRestore::restore(const std::string& dest_directory, const std::string& 
             ret = lchown((dest_directory + file).c_str(), UID, GID);
             if (0 != ret)
             {
-              int errorCode = errno;
+              const int errorCode = errno;
               statStream.close();
               std::cout << "Error while changing ownership of \"" << destinationFile
                         << "\": Code " << errorCode << " (" << strerror(errorCode)

@@ -1,7 +1,7 @@
 /*
  -------------------------------------------------------------------------------
     This file is part of an utility to copy file permissions + ownership.
-    Copyright (C) 2014  Thoronador
+    Copyright (C) 2014, 2015  Thoronador
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -20,6 +20,7 @@
 
 #include <iostream>
 #include "FileUtilities.hpp"
+#include "SaveRestore.hpp"
 
 const int rcInvalidParameter = 1;
 
@@ -46,6 +47,8 @@ void showGPLNotice()
 void showHelp()
 {
   std::cout << "\ncopy-file-stats [options] SOURCE_DIR DESTINATION_DIR\n"
+            << "copy-file-stats [options] --save SOURCE_DIR STAT_FILE\n"
+            << "copy-file-stats [options] --restore STAT_FILE DESTINATION_DIR\n"
             << "\n"
             << "options:\n"
             << "  --help           - displays this help message and quits\n"
@@ -61,14 +64,22 @@ void showHelp()
             << "  --simulate, -s   - alias for --dry-run\n"
             << "  --force, -f      - force change of file permissions and/or ownership.\n"
             << "                     Either -f or -n have to be given to run this programme.\n"
+            << "  --save           - indicates that stats shall just be copied to a file and\n"
+            << "                     not be applied to a source directory\n"
+            << "  --restore        - indicates that stats shall be retrieved from a stat file\n"
+            << "                     and not from a source directory\n"
             << "  SOURCE_DIR       - set source directory (i.e. reference directory) to\n"
             << "                     SOURCE_DIR\n"
-            << "  DESTINATION_DIR  - set destination directory to DESTINATION_DIR\n";
+            << "  DESTINATION_DIR  - set destination directory to DESTINATION_DIR\n"
+            << "  STAT_FILE        - when used with --save name of the file that will be used\n"
+            << "                     to save the stats of the source directory.\n"
+            << "                     When used with --restore name of the file that will be\n"
+            << "                     used to restore stats of the destination directory.\n";
 }
 
 void showVersion()
 {
-  std::cout << "copy-file-stats, version 0.3.1, 2014-09-29\n";
+  std::cout << "copy-file-stats, version 0.4, 2015-03-22\n";
 }
 
 int main(int argc, char **argv)
@@ -80,6 +91,8 @@ int main(int argc, char **argv)
   bool adjustOwnership = true;
   bool dryRun = false;
   bool hasForceOrDryRun = false;
+  bool save = false;
+  bool restore = false;
 
   if ((argc>1) and (argv!=NULL))
   {
@@ -159,15 +172,49 @@ int main(int argc, char **argv)
             return rcInvalidParameter;
           }
         }
+        else if (param=="--save")
+        {
+          if (save)
+          {
+            std::cout << "Error: Parameter --save may only be given once per run.\n";
+            return rcInvalidParameter;
+          }
+          if (restore)
+          {
+            std::cout << "Error: Parameters --save and --restore are mutually exclusive.\n";
+            return rcInvalidParameter;
+          }
+          save = true;
+        } //if --save
+        else if (param=="--restore")
+        {
+          if (restore)
+          {
+            std::cout << "Error: Parameter --restore may only be given once per run.\n";
+            return rcInvalidParameter;
+          }
+          if (save)
+          {
+            std::cout << "Error: Parameters --save and --restore are mutually exclusive.\n";
+            return rcInvalidParameter;
+          }
+          restore = true;
+        } //if --restore
         else if (sourceDir.empty())
         {
           sourceDir = param;
-          std::cout << "Source directory was set to \""<<sourceDir<<"\".\n";
+          if (!restore)
+            std::cout << "Source directory was set to \""<<sourceDir<<"\".\n";
+          else
+            std::cout << "Source stat file was set to \""<<sourceDir<<"\".\n";
         }//source directory
         else if (destDir.empty())
         {
           destDir = param;
-          std::cout << "Destination directory was set to \""<<destDir<<"\".\n";
+          if (!save)
+            std::cout << "Destination directory was set to \""<<destDir<<"\".\n";
+          else
+            std::cout << "Destination stat file was set to \""<<destDir<<"\".\n";
         }//dest. directory
         else
         {
@@ -194,12 +241,26 @@ int main(int argc, char **argv)
 
   if (sourceDir.empty() or destDir.empty())
   {
-    std::cout << "This programme requires a source and a destination directory as parameters to run properly.\n"
+    if (save)
+    {
+      std::cout << "This programme requires a source directory and a destination stat file as parameters to run properly.\n"
+                << "Use --help to get a list of valid parameters.\n";
+    }
+    else if (restore)
+    {
+      std::cout << "This programme requires a source stat file and a destination directory as parameters to run properly.\n"
+                << "Use --help to get a list of valid parameters.\n";
+    }
+    else
+    {
+      std::cout << "This programme requires a source and a destination directory as parameters to run properly.\n"
               << "Use --help to get a list of valid parameters.\n";
+    }
     return rcInvalidParameter;
-  }
+  } //if source or dest are missing
 
-  if (!hasForceOrDryRun)
+  //Either --force or --dry-run are required, unless we save to a stat file.
+  if (!hasForceOrDryRun and !save)
   {
     std::cout << "Error: Neither --dry-run nor --force are given, refusing to run.\n";
     return rcInvalidParameter;
@@ -212,11 +273,36 @@ int main(int argc, char **argv)
     return 1;
   }
 
-  if (copy_stats_recursive(sourceDir, destDir, adjustPermissions, adjustOwnership, verbose, dryRun))
+  if (save)
   {
-    std::cout << "Success!\n";
-    return 0;
+    //save to a stat file
+    if (SaveRestore::save(sourceDir, destDir, verbose))
+    {
+      std::cout << "Success!\n";
+      return 0;
+    }
+    std::cout << "Failure!\n";
   }
-  std::cout << "Failure!\n";
+  else if (restore)
+  {
+    //restore from a stat file
+    SaveRestore instance;
+    if (instance.restore(destDir, sourceDir, adjustPermissions, adjustOwnership, verbose, dryRun))
+    {
+      std::cout << "Success!\n";
+      return 0;
+    }
+    std::cout << "Failure!\n";
+  }
+  else
+  {
+    //"default" directory to directory copying of stats
+    if (copy_stats_recursive(sourceDir, destDir, adjustPermissions, adjustOwnership, verbose, dryRun))
+    {
+      std::cout << "Success!\n";
+      return 0;
+    }
+    std::cout << "Failure!\n";
+  } //else
   return 1;
 }
