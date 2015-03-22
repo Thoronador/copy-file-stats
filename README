@@ -7,8 +7,8 @@ The program works on Linux (or similar POSIX-compatible OS) only, no Windows
 port.
 
 The "stats" mean file ownership (both user and group) and/or permissions.
-The program expects three parameters: path to the source directory and path of the
-destination directory, in that order. Third parameter should be either
+The program expects three parameters: path to the source directory and path of
+the destination directory, in that order. Third parameter should be either
 --dry-run or --force, depending on whether you just want to show, what would be
 changed or whether you want to perform those changes.
 
