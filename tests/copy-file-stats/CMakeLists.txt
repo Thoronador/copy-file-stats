@@ -8,3 +8,7 @@ add_test(NAME executable_parameter_help
 # add test for version parameter
 add_test(NAME executable_parameter_version
          COMMAND $<TARGET_FILE:copy-file-stats> --version)
+
+# add test for license parameter
+add_test(NAME executable_parameter_license
+         COMMAND $<TARGET_FILE:copy-file-stats> --license)
