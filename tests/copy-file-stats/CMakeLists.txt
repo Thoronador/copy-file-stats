@@ -12,3 +12,11 @@ add_test(NAME executable_parameter_version
 # add test for license parameter
 add_test(NAME executable_parameter_license
          COMMAND $<TARGET_FILE:copy-file-stats> --license)
+
+# add test for --save parameter
+add_test(NAME executable_save
+         COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/save/save.sh $<TARGET_FILE:copy-file-stats>)
+
+# add 2nd test for --save parameter
+add_test(NAME executable_save_slash
+         COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/save/save_with_slash.sh $<TARGET_FILE:copy-file-stats>)
