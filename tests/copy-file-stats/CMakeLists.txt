@@ -28,3 +28,7 @@ add_test(NAME executable_restore_chmod
 # add 2nd test for --restore parameter (chmod only so far)
 add_test(NAME executable_restore_chmod_slash
          COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/restore/restore_chmod_slash.sh $<TARGET_FILE:copy-file-stats>)
+
+# add test for directory-to-directory copy of stats
+add_test(NAME executable_dir_to_dir_chmod
+         COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/directory_to_directory/source_to_destination.sh $<TARGET_FILE:copy-file-stats>)
