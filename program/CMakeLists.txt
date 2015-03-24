@@ -6,6 +6,7 @@ project(copy-file-stats)
 set(cfs_sources
     AuxiliaryFunctions.cpp
     FileUtilities.cpp
+    ModeUtility.cpp
     SaveRestore.cpp
     main.cpp)
 

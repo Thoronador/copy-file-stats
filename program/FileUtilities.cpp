@@ -1,7 +1,7 @@
 /*
  -------------------------------------------------------------------------------
     This file is part of an utility to copy file permissions + ownership.
-    Copyright (C) 2014  Thoronador
+    Copyright (C) 2014, 2015  Thoronador
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -26,6 +26,7 @@
 #include <grp.h>
 #include <unistd.h>
 #include "AuxiliaryFunctions.hpp"
+#include "ModeUtility.hpp"
 
 #if defined(__linux__) || defined(linux)
   //Linux directory entries
@@ -126,7 +127,7 @@ bool copy_file_stats(const std::string& src_path, const std::string& dest_path, 
   if (0!=ret)
   {
     int errorCode = errno;
-    if (errorCode==ENOENT)
+    if (errorCode == ENOENT)
     {
       //destination file does not exist, skip silently
       return true;
@@ -146,13 +147,13 @@ bool copy_file_stats(const std::string& src_path, const std::string& dest_path, 
   if (permissions)
   {
     //check for required permission change
-    if (dest_statbuf.st_mode != src_statbuf.st_mode)
+    if (Mode::onlyPermissions(dest_statbuf.st_mode) != Mode::onlyPermissions(src_statbuf.st_mode))
     {
       if (verbose or dryRun)
       {
         std::cout << (dryRun ? "Would change mode of " : "Changing mode of ")
-                  << dest_path << " from " << std::oct << dest_statbuf.st_mode
-                  << " to " << std::oct << src_statbuf.st_mode << std::dec <<"...\n";
+                  << dest_path << " from " << std::oct << Mode::onlyPermissions(dest_statbuf.st_mode)
+                  << " to " << std::oct << Mode::onlyPermissions(src_statbuf.st_mode) << std::dec <<"...\n";
       }
       if (!dryRun)
       {

@@ -28,6 +28,7 @@
 #include <unistd.h> //for lchown()
 #include "AuxiliaryFunctions.hpp"
 #include "FileUtilities.hpp"
+#include "ModeUtility.hpp"
 
 SaveRestore::SaveRestore(const bool useCache)
 : mUseCache(useCache),
@@ -660,12 +661,12 @@ bool SaveRestore::restore(const std::string& dest_directory, const std::string& 
       //mode change requested?
       if (permissions)
       {
-        if (dest_statbuf.st_mode != mode)
+        if (Mode::onlyPermissions(dest_statbuf.st_mode) != Mode::onlyPermissions(mode))
         {
           if (verbose or dryRun)
             std::cout << (dryRun ? "Would change mode of " : "Changing mode of ")
-                      << destinationFile << " from " << std::oct << dest_statbuf.st_mode
-                    << " to " << std::oct << mode << std::dec <<"...\n";
+                      << destinationFile << " from " << std::oct << Mode::onlyPermissions(dest_statbuf.st_mode)
+                      << " to " << std::oct << Mode::onlyPermissions(mode) << std::dec <<"...\n";
           if (!dryRun)
           {
             ret = chmod(destinationFile.c_str(), mode);

@@ -7,6 +7,7 @@ project(mode_test)
 set(mode_t_sources
     ../../program/AuxiliaryFunctions.cpp
     ../../program/FileUtilities.cpp
+    ../../program/ModeUtility.cpp
     ../../program/SaveRestore.cpp
     mode_test.cpp)
 
@@ -26,6 +27,7 @@ project(string_to_mode)
 set(string_to_mode_sources
     ../../program/AuxiliaryFunctions.cpp
     ../../program/FileUtilities.cpp
+    ../../program/ModeUtility.cpp
     ../../program/SaveRestore.cpp
     stringToMode/string_to_mode.cpp)
 
@@ -45,6 +47,7 @@ project(save_stat_file_test)
 set(save_stat_file_test_sources
     ../../program/AuxiliaryFunctions.cpp
     ../../program/FileUtilities.cpp
+    ../../program/ModeUtility.cpp
     ../../program/SaveRestore.cpp
     save/stat_file_test.cpp)
 
@@ -69,6 +72,7 @@ project(restore_stat_file_test)
 set(restore_stat_file_test_sources
     ../../program/AuxiliaryFunctions.cpp
     ../../program/FileUtilities.cpp
+    ../../program/ModeUtility.cpp
     ../../program/SaveRestore.cpp
     restore/stat_file_test.cpp)
 

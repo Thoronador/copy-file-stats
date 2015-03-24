@@ -36,6 +36,8 @@
 		<Unit filename="AuxiliaryFunctions.hpp" />
 		<Unit filename="FileUtilities.cpp" />
 		<Unit filename="FileUtilities.hpp" />
+		<Unit filename="ModeUtility.cpp" />
+		<Unit filename="ModeUtility.hpp" />
 		<Unit filename="SaveRestore.cpp" />
 		<Unit filename="SaveRestore.hpp" />
 		<Unit filename="main.cpp" />
