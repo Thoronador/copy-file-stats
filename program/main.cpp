@@ -80,7 +80,7 @@ void showHelp()
 
 void showVersion()
 {
-  std::cout << "copy-file-stats, version 0.4.1, 2015-03-22\n";
+  std::cout << "copy-file-stats, version 0.4.2, 2015-03-24\n";
 }
 
 int main(int argc, char **argv)
@@ -265,6 +265,11 @@ int main(int argc, char **argv)
   {
     std::cout << "Error: Neither --dry-run nor --force are given, refusing to run.\n";
     return rcInvalidParameter;
+  }
+
+  if (save and dryRun)
+  {
+    std::cout << "Info: The --dry-run option has no effect when used together with --save.\n";
   }
 
   //save user from possible mistakes
