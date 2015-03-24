@@ -29,6 +29,19 @@ add_test(NAME executable_restore_chmod
 add_test(NAME executable_restore_chmod_slash
          COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/restore/restore_chmod_slash.sh $<TARGET_FILE:copy-file-stats>)
 
+
 # add test for directory-to-directory copy of stats
 add_test(NAME executable_dir_to_dir_chmod
          COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/directory_to_directory/source_to_destination.sh $<TARGET_FILE:copy-file-stats>)
+
+# add test for directory-to-directory copy of stats with slash on source
+add_test(NAME executable_dir_to_dir_chmod_slash10
+         COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/directory_to_directory/source_to_destination_slash10.sh $<TARGET_FILE:copy-file-stats>)
+
+# add test for directory-to-directory copy of stats with slash on destination
+add_test(NAME executable_dir_to_dir_chmod_slash01
+         COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/directory_to_directory/source_to_destination_slash01.sh $<TARGET_FILE:copy-file-stats>)
+
+# add test for directory-to-directory copy of stats with slash on both dirs
+add_test(NAME executable_dir_to_dir_chmod_slash11
+         COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/directory_to_directory/source_to_destination_slash11.sh $<TARGET_FILE:copy-file-stats>)
