@@ -31,10 +31,12 @@ GROUP_NAME=`id -gn`
 GROUP_ID=`id -g`
 
 ALL_GROUPS=`id -Gn`
-
 echo "Info: User $USER_NAME belongs to the following groups: $ALL_GROUPS."
 
 # file and directory creation
+
+#include create_directory and create_file functions
+source ${BASH_SOURCE%/*}/../../script-includes/creation.sh
 
 #### SOURCE DIRECTORY ####
 
@@ -42,70 +44,29 @@ echo "Info: User $USER_NAME belongs to the following groups: $ALL_GROUPS."
 SOURCE_DIR=`mktemp --directory --tmpdir testSaveRestoreXXXXXXXXXX`
 
 # create some files
-touch $SOURCE_DIR/alpha || echo "touch failed (alpha)"
-chmod 0755 $SOURCE_DIR/alpha || echo "chmod failed (alpha)"
-
-touch $SOURCE_DIR/beta || echo "touch failed (beta)"
-chmod 0644 $SOURCE_DIR/beta || echo "chmod failed (beta)"
-
-touch $SOURCE_DIR/gamma || echo "touch failed (gamma)"
-chmod 0640 $SOURCE_DIR/gamma || echo "chmod failed (gamma)"
-
-touch $SOURCE_DIR/delta || echo "touch failed (delta)"
-chmod 0600 $SOURCE_DIR/delta || echo "chmod failed (delta)"
+create_file $SOURCE_DIR/alpha 0755
+create_file $SOURCE_DIR/beta 0644
+create_file $SOURCE_DIR/gamma 0640
+create_file $SOURCE_DIR/delta 0600
 
 # -- create subdirectory
-mkdir $SOURCE_DIR/sub
-
-if [[ $? -ne 0 ]]
-then
-  echo "Failed to create subdirectory!"
-  exit 1
-fi
-
-chmod 0777 $SOURCE_DIR/sub || echo "chmod failed (sub)"
+create_directory $SOURCE_DIR/sub 0777
 
 # -- create some files in subdirectory
-touch $SOURCE_DIR/sub/epsilon || echo "touch failed (epsilon)"
-chmod 0124 $SOURCE_DIR/sub/epsilon || echo "chmod failed (epsilon)"
-
-touch $SOURCE_DIR/sub/riemann || echo "touch failed (riemann)"
-chmod 0654 $SOURCE_DIR/sub/riemann || echo "chmod failed (riemann)"
-
-touch $SOURCE_DIR/sub/zeta || echo "touch failed (zeta)"
-chmod 0432 $SOURCE_DIR/sub/zeta || echo "chmod failed (zeta)"
+create_file $SOURCE_DIR/sub/epsilon 0124
+create_file $SOURCE_DIR/sub/riemann 0654
+create_file $SOURCE_DIR/sub/zeta 0432
 
 # -- create directory within subdirectory
-mkdir $SOURCE_DIR/sub/marine
-
-if [[ $? -ne 0 ]]
-then
-  echo "Failed to create subdirectory!"
-  exit 1
-fi
-
-chmod 0777 $SOURCE_DIR/sub/marine || echo "chmod failed (marine)"
+create_directory $SOURCE_DIR/sub/marine 0777
 
 # create some files in .../sub/marine
-touch $SOURCE_DIR/sub/marine/anachronistic || echo "touch failed (anachronistic)"
-chmod 0644 $SOURCE_DIR/sub/marine/anachronistic || echo "chmod failed (anachronistic)"
-
-touch $SOURCE_DIR/sub/marine/brontosaurus || echo "touch failed (brontosaurus)"
-chmod 0500 $SOURCE_DIR/sub/marine/brontosaurus || echo "chmod failed (brontosaurus)"
-
-touch $SOURCE_DIR/sub/marine/catharsis || echo "touch failed (catharsis)"
-chmod 0404 $SOURCE_DIR/sub/marine/catharsis || echo "chmod failed (catharsis)"
+create_file $SOURCE_DIR/sub/marine/anachronistic 0644
+create_file $SOURCE_DIR/sub/marine/brontosaurus 0500
+create_file $SOURCE_DIR/sub/marine/catharsis 0404
 
 # -- create another subdirectory
-mkdir $SOURCE_DIR/trivial
-
-if [[ $? -ne 0 ]]
-then
-  echo "Failed to create subdirectory!"
-  exit 1
-fi
-
-chmod 0777 $SOURCE_DIR/trivial || echo "chmod failed (trivial)"
+create_directory $SOURCE_DIR/trivial 0777
 
 if [[ $? -ne 0 ]]
 then
@@ -122,70 +83,29 @@ echo "Source files created successfully in $SOURCE_DIR!"
 DESTINATION_DIR=`mktemp --directory --tmpdir testSaveRestoreXXXXXXXXXX`
 
 # create some files
-touch $DESTINATION_DIR/alpha || echo "touch failed (alpha)"
-chmod 0700 $DESTINATION_DIR/alpha || echo "chmod failed (alpha)"
-
-touch $DESTINATION_DIR/beta || echo "touch failed (beta)"
-chmod 0600 $DESTINATION_DIR/beta || echo "chmod failed (beta)"
-
-touch $DESTINATION_DIR/gamma || echo "touch failed (gamma)"
-chmod 0600 $DESTINATION_DIR/gamma || echo "chmod failed (gamma)"
-
-touch $DESTINATION_DIR/delta || echo "touch failed (delta)"
-chmod 0600 $DESTINATION_DIR/delta || echo "chmod failed (delta)"
+create_file $DESTINATION_DIR/alpha 0700
+create_file $DESTINATION_DIR/beta 0600
+create_file $DESTINATION_DIR/gamma 0600
+create_file $DESTINATION_DIR/delta 0600
 
 # -- create subdirectory
-mkdir $DESTINATION_DIR/sub
-
-if [[ $? -ne 0 ]]
-then
-  echo "Failed to create subdirectory!"
-  exit 1
-fi
-
-chmod 0700 $DESTINATION_DIR/sub || echo "chmod failed (sub)"
+create_directory $DESTINATION_DIR/sub 0700
 
 # -- create some files in subdirectory
-touch $DESTINATION_DIR/sub/epsilon || echo "touch failed (epsilon)"
-chmod 0600 $DESTINATION_DIR/sub/epsilon || echo "chmod failed (epsilon)"
-
-touch $DESTINATION_DIR/sub/riemann || echo "touch failed (riemann)"
-chmod 0600 $DESTINATION_DIR/sub/riemann || echo "chmod failed (riemann)"
-
-touch $DESTINATION_DIR/sub/zeta || echo "touch failed (zeta)"
-chmod 0600 $DESTINATION_DIR/sub/zeta || echo "chmod failed (zeta)"
+create_file $DESTINATION_DIR/sub/epsilon 0600
+create_file $DESTINATION_DIR/sub/riemann 0600
+create_file $DESTINATION_DIR/sub/zeta 0600
 
 # -- create directory within subdirectory
-mkdir $DESTINATION_DIR/sub/marine
-
-if [[ $? -ne 0 ]]
-then
-  echo "Failed to create subdirectory!"
-  exit 1
-fi
-
-chmod 0770 $DESTINATION_DIR/sub/marine || echo "chmod failed (marine)"
+create_directory $DESTINATION_DIR/sub/marine 0770
 
 # create some files in .../sub/marine
-touch $DESTINATION_DIR/sub/marine/anachronistic || echo "touch failed (anachronistic)"
-chmod 0700 $DESTINATION_DIR/sub/marine/anachronistic || echo "chmod failed (anachronistic)"
-
-touch $DESTINATION_DIR/sub/marine/brontosaurus || echo "touch failed (brontosaurus)"
-chmod 0700 $DESTINATION_DIR/sub/marine/brontosaurus || echo "chmod failed (brontosaurus)"
-
-touch $DESTINATION_DIR/sub/marine/catharsis || echo "touch failed (catharsis)"
-chmod 0700 $DESTINATION_DIR/sub/marine/catharsis || echo "chmod failed (catharsis)"
+create_file $DESTINATION_DIR/sub/marine/anachronistic 0700
+create_file $DESTINATION_DIR/sub/marine/brontosaurus 0700
+create_file $DESTINATION_DIR/sub/marine/catharsis 0700
 
 # -- create another subdirectory
-mkdir $DESTINATION_DIR/trivial
-
-if [[ $? -ne 0 ]]
-then
-  echo "Failed to create subdirectory!"
-  exit 1
-fi
-
-chmod 0700 $DESTINATION_DIR/trivial || echo "chmod failed (trivial)"
+create_directory $DESTINATION_DIR/trivial 0700
 
 if [[ $? -ne 0 ]]
 then

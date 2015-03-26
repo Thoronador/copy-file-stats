@@ -33,74 +33,35 @@ GROUP_NAME=`id -gn`
 GROUP_ID=`id -g`
 
 ALL_GROUPS=`id -Gn`
-
 echo "Info: User $USER_NAME belongs to the following groups: $ALL_GROUPS."
 
+#include create_directory and create_file functions
+source ${BASH_SOURCE%/*}/../../script-includes/creation.sh
+
 # create some files
-touch $BASE_DIR/alpha || echo "touch failed (alpha)"
-chmod 0700 $BASE_DIR/alpha || echo "chmod failed (alpha)"
-
-touch $BASE_DIR/beta || echo "touch failed (beta)"
-chmod 0600 $BASE_DIR/beta || echo "chmod failed (beta)"
-
-touch $BASE_DIR/gamma || echo "touch failed (gamma)"
-chmod 0600 $BASE_DIR/gamma || echo "chmod failed (gamma)"
-
-touch $BASE_DIR/delta || echo "touch failed (delta)"
-chmod 0600 $BASE_DIR/delta || echo "chmod failed (delta)"
+create_file $BASE_DIR/alpha 0700
+create_file $BASE_DIR/beta 0600
+create_file $BASE_DIR/gamma 0600
+create_file $BASE_DIR/delta 0600
 
 # -- create subdirectory
-mkdir $BASE_DIR/sub
-
-if [[ $? -ne 0 ]]
-then
-  echo "Failed to create subdirectory!"
-  exit 1
-fi
-
-chmod 0777 $BASE_DIR/sub || echo "chmod failed (sub)"
+create_directory $BASE_DIR/sub 0777
 
 # -- create some files in subdirectory
-touch $BASE_DIR/sub/epsilon || echo "touch failed (epsilon)"
-chmod 0600 $BASE_DIR/sub/epsilon || echo "chmod failed (epsilon)"
-
-touch $BASE_DIR/sub/riemann || echo "touch failed (riemann)"
-chmod 0600 $BASE_DIR/sub/riemann || echo "chmod failed (riemann)"
-
-touch $BASE_DIR/sub/zeta || echo "touch failed (zeta)"
-chmod 0600 $BASE_DIR/sub/zeta || echo "chmod failed (zeta)"
+create_file $BASE_DIR/sub/epsilon 0600
+create_file $BASE_DIR/sub/riemann 0600
+create_file $BASE_DIR/sub/zeta 0600
 
 # -- create directory within subdirectory
-mkdir $BASE_DIR/sub/marine
-
-if [[ $? -ne 0 ]]
-then
-  echo "Failed to create subdirectory!"
-  exit 1
-fi
-
-chmod 0770 $BASE_DIR/sub/marine || echo "chmod failed (marine)"
+create_directory $BASE_DIR/sub/marine 0770
 
 # create some files in .../sub/marine
-touch $BASE_DIR/sub/marine/anachronistic || echo "touch failed (anachronistic)"
-chmod 0700 $BASE_DIR/sub/marine/anachronistic || echo "chmod failed (anachronistic)"
-
-touch $BASE_DIR/sub/marine/brontosaurus || echo "touch failed (brontosaurus)"
-chmod 0700 $BASE_DIR/sub/marine/brontosaurus || echo "chmod failed (brontosaurus)"
-
-touch $BASE_DIR/sub/marine/catharsis || echo "touch failed (catharsis)"
-chmod 0700 $BASE_DIR/sub/marine/catharsis || echo "chmod failed (catharsis)"
+create_file $BASE_DIR/sub/marine/anachronistic 0700
+create_file $BASE_DIR/sub/marine/brontosaurus 0700
+create_file $BASE_DIR/sub/marine/catharsis 0700
 
 # -- create another subdirectory
-mkdir $BASE_DIR/trivial
-
-if [[ $? -ne 0 ]]
-then
-  echo "Failed to create subdirectory!"
-  exit 1
-fi
-
-chmod 0700 $BASE_DIR/trivial || echo "chmod failed (trivial)"
+create_directory $BASE_DIR/trivial 0700
 
 if [[ $? -ne 0 ]]
 then
