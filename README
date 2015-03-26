@@ -3,8 +3,8 @@ copy-file-stats
 
 copy-file-stats is a small program to "copy" file stats from one files in one
 directory and its subdirectories to another directory and its subdirectories.
-The program works on Linux (or similar POSIX-compatible OS) only, no Windows
-port.
+The program works on Linux (or similar POSIX-compatible OS) only, a Windows
+port neither exists nor is it planned.
 
 The "stats" mean file ownership (both user and group) and/or permissions.
 The program expects three parameters: path to the source directory and path of
@@ -61,7 +61,7 @@ To build the program, just type the following two commands in the directory
 that contains the source code:
 
     cmake ./
-    make
+    make copy-file-stats
 
 If you prefer an "out of source" build, you can create a build directory and
 then do the same, e.g.:
@@ -69,8 +69,9 @@ then do the same, e.g.:
     mkdir ./build
     cd ./build
     cmake ../
-    make
+    make copy-file-stats
 
 This should do the trick, as long as CMake and a C++ compiler are installed on
 your machine. Any recent (and not so recent) C++ compiler should work, because
-copy-file-stats does NOT use any language constructs from C++11 or C++14.
+copy-file-stats itself does NOT use new any language constructs from C++11 or
+C++14.
