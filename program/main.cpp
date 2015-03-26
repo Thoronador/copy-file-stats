@@ -65,10 +65,14 @@ void showHelp()
             << "  --simulate, -s   - alias for --dry-run\n"
             << "  --force, -f      - force change of file permissions and/or ownership.\n"
             << "                     Either -f or -n have to be given to run this programme.\n"
+            << "                     The only exception is --save, the programme always tries\n"
+            << "                     to perform a save, there is no dry run for that.\n"
             << "  --save           - indicates that stats shall just be copied to a file and\n"
-            << "                     not be applied to a source directory\n"
+            << "                     not be applied to a source directory. Mutually exclusive\n"
+            << "                     with --restore.\n"
             << "  --restore        - indicates that stats shall be retrieved from a stat file\n"
-            << "                     and not from a source directory\n"
+            << "                     and not from a source directory.\n"
+            << "                     Mutually exclusive with --save.\n"
             << "  SOURCE_DIR       - set source directory (i.e. reference directory) to\n"
             << "                     SOURCE_DIR\n"
             << "  DESTINATION_DIR  - set destination directory to DESTINATION_DIR\n"
@@ -80,7 +84,7 @@ void showHelp()
 
 void showVersion()
 {
-  std::cout << "copy-file-stats, version 0.4.2, 2015-03-24\n";
+  std::cout << "copy-file-stats, version 0.4.3, 2015-03-26\n";
 }
 
 int main(int argc, char **argv)
