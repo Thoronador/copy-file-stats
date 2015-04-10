@@ -82,9 +82,14 @@ SCRIPT_DIR=`dirname $0`
 
 if [[ $TEST_EXIT_CODE -eq 0 ]]
 then
-  # replace placeholders in template statfile.tpl with actual values
+  # replace placeholders in template statfile.tpl with actual values and sort it
   sed "s/USER_NAME/$USER_NAME/g" $SCRIPT_DIR/statfile.tpl | sed "s/USER_ID/$USER_ID/g" | \
-  sed "s/GROUP_NAME/$GROUP_NAME/g" | sed "s/GROUP_ID/$GROUP_ID/g" > $REFERENCE_STAT_FILE
+  sed "s/GROUP_NAME/$GROUP_NAME/g" | sed "s/GROUP_ID/$GROUP_ID/g" | \
+  LC_ALL=C sort > $REFERENCE_STAT_FILE
+  # sort generated stat file
+  cat $OUTPUT_STAT_FILE | LC_ALL=C sort > $OUTPUT_STAT_FILE.sort
+  # overwrite generated file with sorted version (sort + mv has to be two steps, otherwise file will be empty)
+  mv $OUTPUT_STAT_FILE.sort $OUTPUT_STAT_FILE
   # compare both files with diff
   diff $OUTPUT_STAT_FILE $REFERENCE_STAT_FILE
   # files are identical, if return code of diff is zero

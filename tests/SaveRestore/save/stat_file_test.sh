@@ -87,7 +87,7 @@ then
   sed "s/GROUP_NAME/$GROUP_NAME/g" | sed "s/GROUP_ID/$GROUP_ID/g" | LC_ALL=C sort > $COMPARE_STAT_FILE
   # sort generated stat file
   cat $STAT_FILE | LC_ALL=C sort > $STAT_FILE.sort
-  # overwrite generated file with sorted version (has to be two step, otherwise file will be empty)
+  # overwrite generated file with sorted version (sort + mv has to be two steps, otherwise file will be empty)
   mv $STAT_FILE.sort $STAT_FILE
   # compare both files with diff
   diff $STAT_FILE $COMPARE_STAT_FILE
