@@ -22,8 +22,8 @@
 #     param. #2: permission in octal representation (e.g. 0755)
 function create_file()
 {
-  touch $1 || echo "touch failed (`basename $1`)"
-  chmod $2 $1 || echo "chmod failed (`basename $1`)"
+  touch "$1" || echo "touch failed ($(basename "$1"))"
+  chmod "$2" "$1" || echo "chmod failed ($(basename "$1"))"
 }
 
 
@@ -32,7 +32,7 @@ function create_file()
 #     param. #2: permission in octal representation (e.g. 0755)
 function create_directory()
 {
-  mkdir $1
+  mkdir "$1"
 
   if [[ $? -ne 0 ]]
   then
@@ -40,6 +40,6 @@ function create_directory()
     exit 1
   fi
 
-  chmod $2 $1 || echo "chmod failed (`basename $1`)"
+  chmod "$2" "$1" || echo "chmod failed ($(basename "$1"))"
 }
 

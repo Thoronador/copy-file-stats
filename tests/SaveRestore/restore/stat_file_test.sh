@@ -24,44 +24,44 @@ then
 fi
 
 # create base directory where the test shall take place
-BASE_DIR=`mktemp --directory --tmpdir testSaveRestoreXXXXXXXXXX`
+BASE_DIR=$(mktemp --directory --tmpdir testSaveRestoreXXXXXXXXXX)
 
 # get default user name and group
-USER_NAME=`id -un`
-USER_ID=`id -u`
-GROUP_NAME=`id -gn`
-GROUP_ID=`id -g`
+USER_NAME=$(id -un)
+USER_ID=$(id -u)
+GROUP_NAME=$(id -gn)
+GROUP_ID=$(id -g)
 
-ALL_GROUPS=`id -Gn`
+ALL_GROUPS=$(id -Gn)
 echo "Info: User $USER_NAME belongs to the following groups: $ALL_GROUPS."
 
 #include create_directory and create_file functions
-source ${BASH_SOURCE%/*}/../../script-includes/creation.sh
+source "${BASH_SOURCE%/*}/../../script-includes/creation.sh"
 
 # create some files
-create_file $BASE_DIR/alpha 0700
-create_file $BASE_DIR/beta 0600
-create_file $BASE_DIR/gamma 0600
-create_file $BASE_DIR/delta 0600
+create_file "$BASE_DIR/alpha" 0700
+create_file "$BASE_DIR/beta" 0600
+create_file "$BASE_DIR/gamma" 0600
+create_file "$BASE_DIR/delta" 0600
 
 # -- create subdirectory
-create_directory $BASE_DIR/sub 0777
+create_directory "$BASE_DIR/sub" 0777
 
 # -- create some files in subdirectory
-create_file $BASE_DIR/sub/epsilon 0600
-create_file $BASE_DIR/sub/riemann 0600
-create_file $BASE_DIR/sub/zeta 0600
+create_file "$BASE_DIR/sub/epsilon" 0600
+create_file "$BASE_DIR/sub/riemann" 0600
+create_file "$BASE_DIR/sub/zeta" 0600
 
 # -- create directory within subdirectory
-create_directory $BASE_DIR/sub/marine 0770
+create_directory "$BASE_DIR/sub/marine" 0770
 
 # create some files in .../sub/marine
-create_file $BASE_DIR/sub/marine/anachronistic 0700
-create_file $BASE_DIR/sub/marine/brontosaurus 0700
-create_file $BASE_DIR/sub/marine/catharsis 0700
+create_file "$BASE_DIR/sub/marine/anachronistic" 0700
+create_file "$BASE_DIR/sub/marine/brontosaurus" 0700
+create_file "$BASE_DIR/sub/marine/catharsis" 0700
 
 # -- create another subdirectory
-create_directory $BASE_DIR/trivial 0700
+create_directory "$BASE_DIR/trivial" 0700
 
 if [[ $? -ne 0 ]]
 then
@@ -72,46 +72,46 @@ fi
 echo "Files created successfully in $BASE_DIR!"
 
 # name for stat file
-OUTPUT_STAT_FILE=`mktemp --dry-run --tmpdir=/tmp statfileXXXXXXXX`
+OUTPUT_STAT_FILE=$(mktemp --dry-run --tmpdir=/tmp statfileXXXXXXXX)
 # ... and file from template against which it will be compared
-REFERENCE_STAT_FILE=`mktemp --dry-run --tmpdir=/tmp statfile_compareXXXXXXXX`
+REFERENCE_STAT_FILE=$(mktemp --dry-run --tmpdir=/tmp statfile_compareXXXXXXXX)
 
 # replace placeholders in template statfile.tpl with actual values and sort it
-SCRIPT_DIR=`dirname $0`
-sed "s/USER_NAME/$USER_NAME/g" $SCRIPT_DIR/statfile.tpl | sed "s/USER_ID/$USER_ID/g" | \
-sed "s/GROUP_NAME/$GROUP_NAME/g" | sed "s/GROUP_ID/$GROUP_ID/g" | LC_ALL=C sort > $REFERENCE_STAT_FILE
+SCRIPT_DIR=$(dirname "$0")
+sed "s/USER_NAME/$USER_NAME/g" "$SCRIPT_DIR/statfile.tpl" | sed "s/USER_ID/$USER_ID/g" | \
+sed "s/GROUP_NAME/$GROUP_NAME/g" | sed "s/GROUP_ID/$GROUP_ID/g" | LC_ALL=C sort > "$REFERENCE_STAT_FILE"
 
 # run test
-$1 $BASE_DIR $REFERENCE_STAT_FILE $OUTPUT_STAT_FILE
+$1 "$BASE_DIR" "$REFERENCE_STAT_FILE" "$OUTPUT_STAT_FILE"
 # ...and save its exit code
 TEST_EXIT_CODE=$?
 
 if [[ $TEST_EXIT_CODE -eq 0 ]]
 then
   # sort generated stat file
-  cat $OUTPUT_STAT_FILE | LC_ALL=C sort > $OUTPUT_STAT_FILE.sort
+  cat "$OUTPUT_STAT_FILE" | LC_ALL=C sort > "$OUTPUT_STAT_FILE.sort"
   # overwrite generated file with sorted version (sort + mv has to be two steps, otherwise file will be empty)
-  mv $OUTPUT_STAT_FILE.sort $OUTPUT_STAT_FILE
+  mv "$OUTPUT_STAT_FILE.sort" "$OUTPUT_STAT_FILE"
   # compare both files with diff
-  diff $OUTPUT_STAT_FILE $REFERENCE_STAT_FILE
+  diff "$OUTPUT_STAT_FILE" "$REFERENCE_STAT_FILE"
   # files are identical, if return code of diff is zero
   DIFF_EXIT_CODE=$?
   if [[ $DIFF_EXIT_CODE -ne 0 ]]
   then
     echo "Error: Files are NOT identical."
     echo "Generated file:"
-    cat $OUTPUT_STAT_FILE
+    cat "$OUTPUT_STAT_FILE"
     echo "Template-based file:"
-    cat $REFERENCE_STAT_FILE
+    cat "$REFERENCE_STAT_FILE"
     echo "---- end of files ---"
     echo ""
     echo "Directory listings:"
     echo "base:"
-    ls -la $BASE_DIR
+    ls -la "$BASE_DIR"
     echo "sub:"
-    ls -la $BASE_DIR/sub
+    ls -la "$BASE_DIR/sub"
     echo "marine:"
-    ls -la $BASE_DIR/sub/marine
+    ls -la "$BASE_DIR/sub/marine"
   fi
 else
   echo "Executable returned non-zero exit code ($TEST_EXIT_CODE)."
@@ -120,16 +120,16 @@ fi
 
 # clean up
 # -- test directory
-rm -rf $BASE_DIR
+rm -rf "$BASE_DIR"
 # -- stat file
 if [[ -f $OUTPUT_STAT_FILE ]]
 then
-  rm -f $OUTPUT_STAT_FILE
+  rm -f "$OUTPUT_STAT_FILE"
 fi
 # -- stat file generated from template
 if [[ -f $REFERENCE_STAT_FILE ]]
 then
-  rm -f $REFERENCE_STAT_FILE
+  rm -f "$REFERENCE_STAT_FILE"
 fi
 
 if [[ $TEST_EXIT_CODE -eq 0 && $DIFF_EXIT_CODE -eq 0 ]]
